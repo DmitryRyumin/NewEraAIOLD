@@ -7,7 +7,7 @@
 ![PyPI - Status](https://img.shields.io/pypi/status/neweraai)
 ![PyPI - License](https://img.shields.io/pypi/l/neweraai)
 
-| [Release history](https://github.com/DmitryRyumin/NewEraAI/blob/main/NOTES.md) | [Documentation in Russian](https://github.com/DmitryRyumin/NewEraAI/blob/main/NOTES_RU.md) |
+| [Release history](https://github.com/DmitryRyumin/NewEraAI/blob/main/NOTES.md) | [Documentation in Russian](https://github.com/DmitryRyumin/NewEraAI/blob/main/README_RU.md) |
 | --- | --- |
 
 ## Installation
