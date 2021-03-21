@@ -10,12 +10,12 @@ if sys.version_info[:2] < MIN_PYTHON_VERSION:
 import neweraai
 
 REQUIRED_PACKAGES = [
-    'colorama >= 0.4.4',
-    'jupyterlab >= 3.0.11',
-    'pandas >= 1.2.3',
     'numpy >= 1.20.1',
+    'pandas >= 1.2.3',
+    'matplotlib >= 3.3.4',
+    'jupyterlab >= 3.0.11',
+    'colorama >= 0.4.4',
     'tabulate >= 0.8.9',
-    'matplotlib >= 3.3.4'
 ]
 
 CLASSIFIERS = """\

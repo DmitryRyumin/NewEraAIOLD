@@ -283,7 +283,6 @@ class Core(Messages):
                 ],
                 'Version': [i.__version__ for i in [np, pd, mpl, jlab, colorama, tb]]
             }
-            # pkgs['Version'].append(get_distribution('MediaPipe').version)
 
             self._df_pkgs = pd.DataFrame(data = pkgs)  # Версии используемых библиотек
             self._df_pkgs.index += 1
