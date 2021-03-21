@@ -1,0 +1,62 @@
+# base English translation.
+# Copyright (C) 2020 Dmitry Ryumin
+# Dmitry Ryumin <dl_03.03.1991@mail.ru>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"POT-Creation-Date: 2021-03-19 00:16+0300\n"
+"PO-Revision-Date: 2021-03-19 00:16+0300\n"
+"Last-Translator: Dmitry Ryumin <dl_03.03.1991@mail.ru>\n"
+"Language-Team: English <dl_03.03.1991@mail.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: neweraml/modules/core/core.py:39
+msgid "Файл"
+msgstr "File"
+
+#: neweraml/modules/core/core.py:40
+msgid "Линия"
+msgstr "Line"
+
+#: neweraml/modules/core/core.py:41
+msgid "Метод"
+msgstr "Method"
+
+#: neweraml/modules/core/core.py:42
+msgid "Тип ошибки"
+msgstr "Type error"
+
+#: neweraml/modules/core/core.py:44
+msgid "сек."
+msgstr "sec."
+
+#: neweraml/modules/core/messages.py:27
+msgid ""
+"[{}] Запуск: \n"
+"    Автор: {}\n"
+"    Email: {}\n"
+"    Сопровождающие: {}\n"
+"    Версия: {}"
+msgstr ""
+"[{}] Start: \n"
+"    Author: {}\n"
+"    Email: {}\n"
+"    Maintainer: {}\n"
+"    Version: {}"
+
+#: neweraml/modules/core/messages.py:36
+msgid "\"{}.{}\" не поддерживается в данной среде использования пакета ..."
+msgstr ""
+
+#: neweraml/modules/core/messages.py:38
+msgid "Неверные типы или значения аргументов в \"{}\" ..."
+msgstr "Invalid argument types or values in \"{}\" ..."
+
+#: neweraml/modules/core/messages.py:39
+msgid "Необходимые значения в командной строке не найдены ..."
+msgstr "[{}{}{}] Required command line values not found ..."
