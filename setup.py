@@ -13,7 +13,7 @@ REQUIRED_PACKAGES = [
     'numpy >= 1.20.1',
     'pandas >= 1.2.3',
     'matplotlib >= 3.3.4',
-    'jupyterlab >= 3.0.11',
+    'jupyterlab >= 3.0.12',
     'colorama >= 0.4.4',
     'tabulate >= 0.8.9',
 ]
