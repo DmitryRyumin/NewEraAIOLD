@@ -9,7 +9,6 @@
 # Импорт необходимых инструментов
 # ######################################################################################################################
 import sys                 # Доступ к некоторым переменным и функциям Python
-import argparse            # Парсинг аргументов и параметров командной строки
 import time                # Работа со временем
 import pandas as pd        # Обработка и анализ данных
 import numpy as np         # Научные вычисления
@@ -24,6 +23,7 @@ from typing import Dict        # Типы данных
 from IPython.display import Markdown, display
 
 # Персональные
+import neweraai  # NewEraAI - новая эра искусственного интеллекта
 from neweraai.modules.core.settings import Settings  # Глобальный файл настроек
 
 # ######################################################################################################################
@@ -106,6 +106,31 @@ class Core(Messages):
         }
 
         return _trac
+
+    # Информация об пакете
+    def _metadata_info(self):
+        """
+        Информация об пакете
+        """
+
+        tab = '&nbsp;' * 4
+
+        if self.is_notebook is True:
+            b = '**' if self.bold_runtime is True else ''
+            cr = self.color_runtime
+
+            # Отображение
+            display(Markdown(('{}' * 9).format(
+                f'<span style=\"color:{self.color_runtime}\">{b}[</span><span style=\"color:#47CFF2\">',
+                datetime.now().strftime(self._format_time),
+                f'</span><span style=\"color:{self.color_runtime}\">]</span> ',
+                f'<span style=\"color:{self.color_runtime}\">{self._metadata[0]}:</span>{b}',
+                f'<p><span style=\"color:{cr}\">{tab}{self._metadata[1]}: <u>{neweraai.__author__}</u></span>',
+                f'<br /><span style=\"color:{cr}\">{tab}{self._metadata[2]}: <u>{neweraai.__email__}</u></span>',
+                f'<br /><span style=\"color:{cr}\">{tab}{self._metadata[3]}: <u>{neweraai.__maintainer__}</u></span>',
+                f'<br /><span style=\"color:{cr}\">{tab}{self._metadata[4]}: <u>{neweraai.__version__}</u></span>',
+                f'<br /><span style=\"color:{cr}\">{tab}{self._metadata[5]}: <u>{neweraai.__license__}</u></span></p>'
+            )))
 
     # Неверные типы аргументов
     def _inv_args(self, class_name: str, build_name: str):

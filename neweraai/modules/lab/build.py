@@ -21,5 +21,7 @@ class Run(Audio):
     # Конструктор
     # ------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self):
+    def __init__(self, metadata: bool = True):
         super().__init__()  # Выполнение конструктора из суперкласса
+
+        if self.is_notebook is True and type(metadata) is bool and metadata is True: self._metadata_info()
