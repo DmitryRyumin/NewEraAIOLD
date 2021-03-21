@@ -141,7 +141,5 @@ class Language:
                 self.__lang_default = curr_lang  # Изменение языка
 
             # Метод запущен в конструкторе
-            if inspect.stack()[1].function == "__init__":
-                return self.__i18n[self.lang_default]
-            else:
-                self._ = self.__i18n[self.lang_default]  # Установка языка
+            if inspect.stack()[1].function == "__init__": return self.__i18n[self.lang_default]
+            else: self._ = self.__i18n[self.lang_default]  # Установка языка

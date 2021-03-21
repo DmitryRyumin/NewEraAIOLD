@@ -16,13 +16,12 @@ import numpy as np         # Научные вычисления
 import matplotlib as mpl   # Визуализация графиков
 import jupyterlab as jlab  # Интерактивная среда разработки для работы с блокнотами, кодом и данными
 import colorama            # Цветной текст терминала
-import tabulate as tb      # Отображение DataFrame в консоле
+import pymediainfo         # Получение meta данных из медиафайлов
 
 from datetime import datetime  # Работа со временем
 from typing import Dict        # Типы данных
-from tabulate import tabulate  # Отображение DataFrame в консоле
 
-from IPython.display import Markdown, display, clear_output
+from IPython.display import Markdown, display
 
 # Персональные
 from neweraai.modules.core.settings import Settings  # Глобальный файл настроек
@@ -31,7 +30,7 @@ from neweraai.modules.core.settings import Settings  # Глобальный фа
 # Сообщения
 # ######################################################################################################################
 class Messages(Settings):
-    """Класс для сообщений"""
+    """Сообщения"""
 
     # ------------------------------------------------------------------------------------------------------------------
     # Конструктор
@@ -61,8 +60,6 @@ class Core(Messages):
         super().__init__()  # Выполнение конструктора из суперкласса
 
         self._is_notebook = self.__is_notebook()  # Определение запуска пакета в Jupyter или аналогах
-
-        self._ap: argparse.ArgumentParser or None = None  # Парсер для параметров командной строки
 
         self._start_time: int = -1  # Старт времени выполнения
         self._runtime: int = -1  # Время выполнения
@@ -131,11 +128,6 @@ class Core(Messages):
                 datetime.now().strftime(self._format_time),
                 f'</span><span style=\"color:{self.color_runtime}\">', inv_args, f'{b}</span>'
             )))
-        else:
-            print('[{}{}{}] {}'.format(
-                self.red, datetime.now().strftime(self._format_time),
-                self.end, inv_args,
-            ))
 
     # Ошибки
     def _other_error(self, message: str):
@@ -164,16 +156,6 @@ class Core(Messages):
                 f'<br /><span style=\"color:{cr}\">{tab}{self._trac_method}: <u>{trac["name"]}</u></span>',
                 f'<br /><span style=\"color:{cr}\">{tab}{self._trac_type_err}: <u>{trac["type"]}</u></span></p>'
             )))
-        else:
-            template = '[{}{}{}] {} \n    ' + ('{}: {}{}{}\n    ' * 3) + '{}: {}{}{}'
-
-            print(template.format(
-                self.red, datetime.now().strftime(self._format_time), self.end, message,
-                self._trac_file, self.underline, trac["filename"], self.end,
-                self._trac_line, self.underline, trac["lineno"], self.end,
-                self._trac_method, self.underline, trac["name"], self.end,
-                self._trac_type_err, self.underline, trac["type"], self.end
-            ))
 
     # Начало времени выполнения
     def _r_start(self):
@@ -200,9 +182,30 @@ class Core(Messages):
 
             # Отображение
             display(Markdown('{}'.format(f'<span style=\"color:{self.color_runtime}\">{b}{t}{b}</span>')))
-        else:
-            print(t)
 
+    # Индикатор выполнения
+    def _progressbar(self, message: str, progress: str):
+        """
+        Индикатор выполнения
+
+        Аргументы:
+           message: Сообщение
+           progress: Индикатор выполнения
+        """
+
+        tab = '&nbsp;' * 4
+
+        if self.is_notebook is True:
+            b = '**' if self.bold_runtime is True else ''
+
+            # Отображение
+            display(Markdown(('{}' * 5).format(
+                f'<span style=\"color:{self.color_runtime}\">{b}[</span><span style=\"color:#47CFF2\">',
+                datetime.now().strftime(self._format_time),
+                f'</span><span style=\"color:{self.color_runtime}\">]</span> ',
+                f'<span style=\"color:{self.color_runtime}\">{message}</span>{b}',
+                f'<p><span style=\"color:{self.color_runtime}\">{tab}{progress}</span></p>'
+            )))
 
     # ------------------------------------------------------------------------------------------------------------------
     # Внутренние методы
@@ -230,34 +233,6 @@ class Core(Messages):
     # Внешние методы
     # ------------------------------------------------------------------------------------------------------------------
 
-    # Построение аргументов командной строки
-    def build_args(self, description: str, conv_to_dict: bool = True) -> Dict or None:
-        """
-        Построение аргументов командной строки
-
-        Аргументы:
-           description  - Описание парсера командной строки
-           conv_to_dict - Преобразование списка аргументов командной строки в словарь
-
-        Возвращает: Dict если парсер командной строки окончательный, в обратном случае None
-        """
-
-        try:
-            if self.is_notebook is True: raise PermissionError
-        except PermissionError:
-            self._other_error(self._method_not_supported.format(__class__.__name__, self.build_args.__name__))
-        else:
-            try:
-                # Проверка аргументов
-                if type(description) is not str or not description or type(conv_to_dict) is not bool: raise TypeError
-            except TypeError: self._inv_args(__class__.__name__, self.build_args.__name__)
-            else:
-                # Парсер для параметров командной строки
-                self._ap = argparse.ArgumentParser(description = description)
-
-                if conv_to_dict is True:
-                    return vars(self._ap.parse_args())  # Преобразование списка аргументов командной строки в словарь
-
     # Версии установленных библиотек
     def libs_vers(self, runtime: bool = True):
         """
@@ -279,9 +254,9 @@ class Core(Messages):
 
             pkgs = {
                 'Package': [
-                    'NumPy', 'Pandas', 'Matplotlib', 'JupyterLab', 'Colorama', 'Tabulate'
+                    'NumPy', 'Pandas', 'Matplotlib', 'JupyterLab', 'Colorama', 'Pymediainfo'
                 ],
-                'Version': [i.__version__ for i in [np, pd, mpl, jlab, colorama, tb]]
+                'Version': [i.__version__ for i in [np, pd, mpl, jlab, colorama, pymediainfo]]
             }
 
             self._df_pkgs = pd.DataFrame(data = pkgs)  # Версии используемых библиотек
@@ -289,6 +264,5 @@ class Core(Messages):
 
             # Отображение
             if self.is_notebook is True: display(self._df_pkgs)
-            else: print(tabulate(self._df_pkgs, headers='keys', tablefmt='psql'))
 
             if runtime: self._r_end()

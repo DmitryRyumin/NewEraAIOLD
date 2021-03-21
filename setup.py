@@ -15,7 +15,7 @@ REQUIRED_PACKAGES = [
     'matplotlib >= 3.3.4',
     'jupyterlab >= 3.0.12',
     'colorama >= 0.4.4',
-    'tabulate >= 0.8.9',
+    'pymediainfo >= 5.0.3'
 ]
 
 CLASSIFIERS = """\

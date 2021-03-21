@@ -33,4 +33,4 @@ pip install --upgrade neweraai
 `matplotlib` | `3.3.4` | ![PyPI](https://img.shields.io/pypi/v/matplotlib) |
 `jupyterlab` | `3.0.12` | ![PyPI](https://img.shields.io/pypi/v/jupyterlab) |
 `colorama` | `0.4.4` | ![PyPI](https://img.shields.io/pypi/v/colorama) |
-`tabulate` | `0.8.9` | ![PyPI](https://img.shields.io/pypi/v/tabulate) |
+`pymediainfo` | `5.0.3` | ![PyPI](https://img.shields.io/pypi/v/pymediainfo) |
