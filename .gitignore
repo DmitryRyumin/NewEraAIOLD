@@ -70,7 +70,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 node_modules/
-neweraai/samples
+neweraai/samples/
+neweraai/models/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

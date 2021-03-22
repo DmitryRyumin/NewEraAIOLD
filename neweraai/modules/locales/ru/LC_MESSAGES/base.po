@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"POT-Creation-Date: 2021-03-19 00:16+0300\n"
-"PO-Revision-Date: 2021-03-19 00:16+0300\n"
+"POT-Creation-Date: 2021-03-22 23:23+0300\n"
+"PO-Revision-Date: 2021-03-22 23:23+0300\n"
 "Last-Translator: Dmitry Ryumin <dl_03.03.1991@mail.ru>\n"
 "Language-Team: Russian <dl_03.03.1991@mail.ru>\n"
 "MIME-Version: 1.0\n"
@@ -15,43 +15,82 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: neweraml/modules/core/core.py:39
+#: neweraai/modules/core/core.py:44
 msgid "Файл"
 msgstr ""
 
-#: neweraml/modules/core/core.py:40
+#: neweraai/modules/core/core.py:45
 msgid "Линия"
 msgstr ""
 
-#: neweraml/modules/core/core.py:41
+#: neweraai/modules/core/core.py:46
 msgid "Метод"
 msgstr ""
 
-#: neweraml/modules/core/core.py:42
+#: neweraai/modules/core/core.py:47
 msgid "Тип ошибки"
 msgstr ""
 
-#: neweraml/modules/core/core.py:44
+#: neweraai/modules/core/core.py:49
 msgid "сек."
 msgstr ""
 
-#: neweraml/modules/core/messages.py:27
-msgid ""
-"[{}] Запуск: \n"
-"    Автор: {}\n"
-"    Email: {}\n"
-"    Сопровождающие: {}\n"
-"    Версия: {}"
+#: neweraai/modules/core/messages.py:30
+msgid "NewEraAI - новая эра искусственного интеллекта"
 msgstr ""
 
-#: neweraml/modules/core/messages.py:36
+#: neweraai/modules/core/messages.py:31
+msgid "Email"
+msgstr ""
+
+#: neweraai/modules/core/messages.py:31
+msgid "Автор"
+msgstr ""
+
+#: neweraai/modules/core/messages.py:32
+msgid "Версия"
+msgstr ""
+
+#: neweraai/modules/core/messages.py:32
+msgid "Лицензия"
+msgstr ""
+
+#: neweraai/modules/core/messages.py:32
+msgid "Сопровождающие"
+msgstr ""
+
+#: neweraai/modules/core/messages.py:37
 msgid "\"{}.{}\" не поддерживается в данной среде использования пакета ..."
 msgstr ""
 
-#: neweraml/modules/core/messages.py:38
+#: neweraai/modules/core/messages.py:38
 msgid "Неверные типы или значения аргументов в \"{}\" ..."
 msgstr ""
 
-#: neweraml/modules/core/messages.py:39
-msgid "Необходимые значения в командной строке не найдены ..."
+#: neweraai/modules/core/messages.py:40
+msgid "Ой! Что-то пошло не так ... смотрите настройки ядра и цепочку выполнения действий ..."
+msgstr ""
+
+#: neweraai/modules/core/messages.py:42
+msgid "Прям беда! Не обработанную ошибку необходимо проанализировать и выявить причину ..."
+msgstr ""
+
+#: neweraai/modules/core/settings.py:29
+msgid "Время выполнения"
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:41
+msgid "В указанной директории необходимые файлы не найдены ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:42
+msgid "Извлечение аудиодорожки из видеофайла ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:43
+msgid "из"
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:44
+msgid "Директория \"{}\" не найдена ..."
 msgstr ""

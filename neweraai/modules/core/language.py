@@ -15,8 +15,7 @@
 #     3. locate msgfmt.py
 #     4. /usr/local/Cellar/python@3.8/3.8.8/Frameworks/Python.framework/Versions/3.8/share/doc/python3.8/examples/Tools/
 #        i18n/msgfmt.py neweraai/modules/locales/en/LC_MESSAGES/base.po neweraai/modules/locales/en/LC_MESSAGES/base
-import gettext
-import argparse  # Парсинг аргументов и параметров командной строки
+import gettext   # Формирование языковых пакетов
 import os        # Взаимодействие с файловой системой
 import sys       # Доступ к некоторым переменным и функциям Python
 import inspect   # Инспектор
@@ -105,15 +104,6 @@ class Language:
             if curr_lang not in sys.argv: continue
 
             self.__lang_default = curr_lang  # Изменение языка
-
-        tr_argparse = gettext.translation(
-            'argparse',  # Домен
-            localedir = self.path_to_locales,  # Директория с поддерживаемыми языками
-            languages = [self.lang_default],  # Язык
-            fallback = True  # Отключение ошибки
-        )
-
-        argparse._ = tr_argparse.gettext
 
         return trs_base
 

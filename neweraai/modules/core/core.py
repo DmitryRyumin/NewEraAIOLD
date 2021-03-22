@@ -16,6 +16,8 @@ import matplotlib as mpl   # Визуализация графиков
 import jupyterlab as jlab  # Интерактивная среда разработки для работы с блокнотами, кодом и данными
 import colorama            # Цветной текст терминала
 import pymediainfo         # Получение meta данных из медиафайлов
+import torch               # Машинное обучение от Facebook
+import torchaudio          # Работа с аудио
 
 from datetime import datetime  # Работа со временем
 from typing import Dict        # Типы данных
@@ -65,7 +67,6 @@ class Core(Messages):
         self._runtime: int = -1  # Время выполнения
 
         self._df_pkgs: pd.DataFrame = pd.DataFrame()  # DataFrame c версиями установленных библиотек
-
 
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
@@ -160,7 +161,7 @@ class Core(Messages):
         Ошибки
 
         Аргументы:
-           message: Сообщение
+           message - Сообщение
         """
 
         trac = self._traceback()  # Трассировка исключений
@@ -214,8 +215,8 @@ class Core(Messages):
         Индикатор выполнения
 
         Аргументы:
-           message: Сообщение
-           progress: Индикатор выполнения
+           message - Сообщение
+           progress - Индикатор выполнения
         """
 
         tab = '&nbsp;' * 4
@@ -264,7 +265,7 @@ class Core(Messages):
         Версии установленных библиотек
 
         Аргументы:
-            runtime: Подсчет времени выполнения
+            runtime - Подсчет времени выполнения
         """
 
         # Сброс
@@ -279,9 +280,9 @@ class Core(Messages):
 
             pkgs = {
                 'Package': [
-                    'NumPy', 'Pandas', 'Matplotlib', 'JupyterLab', 'Colorama', 'Pymediainfo'
+                    'PyTorch', 'Torchaudio', 'NumPy', 'Pandas', 'Matplotlib', 'JupyterLab', 'Colorama', 'Pymediainfo'
                 ],
-                'Version': [i.__version__ for i in [np, pd, mpl, jlab, colorama, pymediainfo]]
+                'Version': [i.__version__ for i in [torch, torchaudio, np, pd, mpl, jlab, colorama, pymediainfo]]
             }
 
             self._df_pkgs = pd.DataFrame(data = pkgs)  # Версии используемых библиотек

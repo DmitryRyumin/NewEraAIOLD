@@ -10,6 +10,9 @@ if sys.version_info[:2] < MIN_PYTHON_VERSION:
 import neweraai
 
 REQUIRED_PACKAGES = [
+    'torch >= 1.8.0',
+    'torchaudio >= 0.8.0',
+    'SoundFile >= 0.10.3.post1',
     'numpy >= 1.20.1',
     'pandas >= 1.2.3',
     'matplotlib >= 3.3.4',
