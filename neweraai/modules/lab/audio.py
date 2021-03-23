@@ -273,6 +273,11 @@ class Audio(Messages):
             # Проверка аргументов
             if (type(path_to_model) is not str or type(force_reload) is not bool or type(freq) is not int or freq <= 0
                     or type(num_to_display) is not int or num_to_display > 50 or 0 >= num_to_display
+                    or type(trig_sum) is not float or trig_sum < 0 or type(neg_trig_sum) is not float
+                    or neg_trig_sum < 0 or type(num_steps) is not int or num_steps < 0
+                    or type(batch_size) is not int or batch_size < 0 or type(num_samples_per_window) is not int
+                    or num_samples_per_window < 0 or type(min_speech_samples) is not int or min_speech_samples < 0
+                    or type(min_silence_samples) is not int or min_silence_samples < 0
                     or type(logs) is not bool or type(runtime) is not bool):
                 raise TypeError
         except TypeError: self._inv_args(__class__.__name__, self.vad.__name__)
