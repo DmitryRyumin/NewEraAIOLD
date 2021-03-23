@@ -5,7 +5,6 @@
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/neweraai)
 ![GitHub repo size](https://img.shields.io/github/repo-size/dmitryryumin/neweraai)
 ![PyPI - Status](https://img.shields.io/pypi/status/neweraai)
-![PyPI - License](https://img.shields.io/pypi/l/neweraai)
 
 | [История релизов](https://github.com/DmitryRyumin/NewEraAI/blob/main/NOTES_RU.md) | [Документация на английском](https://github.com/DmitryRyumin/NewEraAI) |
 | --- | --- |
