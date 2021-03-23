@@ -45,7 +45,7 @@ class Messages(Statistics):
 
         self._files_not_found: str = self._('В указанной директории необходимые файлы не найдены ...')
         self._extract_audio_from_video: str = self._('Извлечение аудиодорожек из видеофайлов ...')
-        self._curr_progress: str = '{} ' + self._('из') + ' {} ({}%) ...'
+        self._curr_progress: str = '{} ' + self._('из') + ' {} ({}%) ... {} ...'
         self._folder_not_found: str = self._('Директория "{}" не найдена ...')
 
         self._download_model_from_repo: str = self._('Загрузка модели "{}{}{}" из репозитория {} ...')
@@ -125,21 +125,21 @@ class Audio(Messages):
                 except Exception: self._other_error(self._unknown_err)
                 else:
                     # Индикатор выполнения
-                    progressbar = lambda item: self._progressbar(
+                    progressbar = lambda item, info: self._progressbar(
                         self._extract_audio_from_video,
-                        self._curr_progress.format(item, len_paths, round(item * 100 / len_paths, 2))
+                        self._curr_progress.format(item, len_paths, round(item * 100 / len_paths, 2), info)
                     )
 
-                    progressbar(0)  # Индикатор выполнения
+                    # Локальный путь
+                    local_path = lambda path:\
+                        os.path.join(*Path(path).parts[-abs((len(Path(path).parts) - len(Path(original).parts))):])
 
                     # Проход по всем найденным видеофайлам
                     for i, curr_path in enumerate(paths):
-                        if i != len_paths: clear_output(wait = True)
-
-                        i += 1  # Текущий индекс
+                        progressbar(i, local_path(curr_path))  # Индикатор выполнения
 
                         try:
-                            if self.ext_audio == '': raise ValueError
+                            if not self.ext_audio: raise ValueError
 
                             # Путь до аудиофайла
                             audio_path = os.path.join(Path(curr_path).parent, Path(curr_path).stem + self.ext_audio)
@@ -164,7 +164,9 @@ class Audio(Messages):
                                 except OSError: self._other_error(self._som_ww); return None
                                 except Exception: self._other_error(self._unknown_err); return None
                                 else:
-                                    progressbar(i)  # Индикатор выполнения
+                                    if i != len_paths: clear_output(wait = True)
+
+                    progressbar(len(paths), local_path(paths[-1]))  # Индикатор выполнения
             finally:
                 if runtime: self._r_end()
 
@@ -255,14 +257,12 @@ class Audio(Messages):
 
                         progressbar(0)  # Индикатор выполнения
 
+                        not_found_audiofiles = []  # Список не найденных аудиофайлов
+
                         # Проход по всем найденным видеофайлам
                         for i, curr_path in enumerate(paths):
-                            if i != len_paths: clear_output(wait = True)
-
-                            i += 1  # Текущий индекс
-
                             try:
-                                if self.ext_audio == '': raise ValueError
+                                if not self.ext_audio: raise ValueError
 
                                 # Путь до аудиофайла
                                 audio_path = os.path.join(Path(curr_path).parent, Path(curr_path).stem + self.ext_audio)
@@ -319,5 +319,12 @@ class Audio(Messages):
                                             )
 
                                             subprocess.call(ff, shell = True)
+
+                                            if i != len_paths: clear_output(wait = True)
+
+                                            i += 1  # Текущий индекс
+                                else:
+                                    not_found_audiofiles.append(audio_path)
+
             finally:
                 if runtime: self._r_end()

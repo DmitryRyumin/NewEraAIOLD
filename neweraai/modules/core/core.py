@@ -71,6 +71,8 @@ class Core(Messages):
 
         self._df_pkgs: pd.DataFrame = pd.DataFrame()  # DataFrame c версиями установленных библиотек
 
+        self._info_last: str = '' # Последнее информационное сообщение
+
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
     # ------------------------------------------------------------------------------------------------------------------
@@ -167,18 +169,20 @@ class Core(Messages):
            message - Сообщение
         """
 
-        tab = '&nbsp;' * 4
-
         if self.is_notebook is True:
             b = '**' if self.bold_text is True else ''
 
+            if type(message) is str and message:
+                # Текущее сообщение резервируется для дальшейшего использования
+                self._info_last = ('{}' * 4).format(
+                    f'<span style=\"color:{self.color_simple}\">{b}[</span><span style=\"color:{self.color_info}\">',
+                    datetime.now().strftime(self._format_time),
+                    f'</span><span style=\"color:{self.color_simple}\">]</span> ',
+                    f'<span style=\"color:{self.color_simple}\">{message}</span>{b}'
+                )
+
             # Отображение
-            display(Markdown(('{}' * 4).format(
-                f'<span style=\"color:{self.color_simple}\">{b}[</span><span style=\"color:{self.color_info}\">',
-                datetime.now().strftime(self._format_time),
-                f'</span><span style=\"color:{self.color_simple}\">]</span> ',
-                f'<span style=\"color:{self.color_simple}\">{message}</span>{b}'
-            )))
+            display(Markdown(self._info_last))
 
     # Ошибки
     def _other_error(self, message: str):
