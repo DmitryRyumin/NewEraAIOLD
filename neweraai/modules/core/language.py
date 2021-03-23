@@ -15,22 +15,20 @@
 #     3. locate msgfmt.py
 #     4. /usr/local/Cellar/python@3.8/3.8.8/Frameworks/Python.framework/Versions/3.8/share/doc/python3.8/examples/Tools/
 #        i18n/msgfmt.py neweraai/modules/locales/en/LC_MESSAGES/base.po neweraai/modules/locales/en/LC_MESSAGES/base
-import gettext   # Формирование языковых пакетов
-import os        # Взаимодействие с файловой системой
-import sys       # Доступ к некоторым переменным и функциям Python
-import inspect   # Инспектор
+from dataclasses import dataclass  # Класс данных
 
-from colorama import init  # Цветной текст терминала
+import gettext  # Формирование языковых пакетов
+import os       # Взаимодействие с файловой системой
+import inspect  # Инспектор
 
 # Типы данных
 from typing import List, Dict
 from types import MethodType
 
-LANG = ''  # Язык
-
 # ######################################################################################################################
 # Определение языка
 # ######################################################################################################################
+@dataclass
 class Language:
     """Определение языка"""
 
@@ -38,16 +36,17 @@ class Language:
     # Конструктор
     # ------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self):
-        init()  # Инициализация терминала с возможностью цветного текста
+    lang_: str = 'ru'  # Язык
 
-        self.__lang_default: str = 'en'  # Язык по умолчанию
+    def __post_init__(self):
+        self.__lang_default: str = self.lang_  # Язык по умолчанию
         # Директория с поддерживаемыми языками
         self.__path_to_locales: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'locales'))
 
         self.__locales: List[str] = self.__get_languages()  # Поддерживаемые языковые пакеты
         self.__i18n: Dict[str, MethodType] = self.__get_locales()  # Получение языковых пакетов
-        self._: MethodType = self.__set_locale(LANG)  # Установка языка
+
+        self._: MethodType = self.__set_locale(self.lang_)  # Установка языка
 
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
@@ -100,9 +99,6 @@ class Language:
                 fallback = True  # Отключение ошибки
             ).gettext
 
-            # В аргументах командной строки не найден язык
-            if curr_lang not in sys.argv: continue
-
             self.__lang_default = curr_lang  # Изменение языка
 
         return trs_base
@@ -126,10 +122,11 @@ class Language:
             # Проход по всем языкам
             for curr_lang in self.locales:
                 # В аргументах командной строки не найден язык
-                if curr_lang not in sys.argv and lang != curr_lang: continue
+                if lang != curr_lang: continue
 
                 self.__lang_default = curr_lang  # Изменение языка
 
             # Метод запущен в конструкторе
-            if inspect.stack()[1].function == "__init__": return self.__i18n[self.lang_default]
+            if inspect.stack()[1].function == "__init__" or inspect.stack()[1].function == "__post_init__":
+                return self.__i18n[self.lang_default]
             else: self._ = self.__i18n[self.lang_default]  # Установка языка

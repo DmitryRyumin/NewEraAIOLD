@@ -8,6 +8,8 @@
 # ######################################################################################################################
 # Импорт необходимых инструментов
 # ######################################################################################################################
+from dataclasses import dataclass  # Класс данных
+
 from typing import List  # Типы данных
 
 # Персональные
@@ -16,6 +18,7 @@ from neweraai.modules.core.messages import Messages  # Сообщения
 # ######################################################################################################################
 # Настройки ядра
 # ######################################################################################################################
+@dataclass
 class Settings(Messages):
     """Настройки ядра"""
 
@@ -23,12 +26,27 @@ class Settings(Messages):
     # Конструктор
     # ------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self):
-        super().__init__()  # Выполнение конструктора из суперкласса
+    # Цвет текстов
+    color_simple_: str = '#666'   # Обычный текст
+    color_info_: str = '#1776D2'  # Информация
+    color_err_: str = '#FF0000'   # Ошибка
+    color_true_: str = '#008001'  # Положительная информация
+    bold_text_: bool = True       # Жирность текста
+    text_runtime_: str = ''       # Текст времени выполнения
 
-        self.text_runtime: str = self._('Время выполнения')  # Текст времени выполнения
-        self.color_runtime: str = '#666'  # Цвет текста
-        self.bold_runtime: bool = True  # Жирность текста
+    def __post_init__(self):
+        super().__post_init__()  # Выполнение конструктора из суперкласса
+
+        # Цвет текстов
+        self.color_simple: str = self.color_simple_  # Обычный текст
+        self.color_info: str = self.color_info_      # Информация
+        self.color_err: str = self.color_err_        # Ошибка
+        self.color_true: str = self.color_true_      # Положительная информация
+        self.bold_text: bool = self.bold_text_       # Жирность текста
+
+        # Текст времени выполнения
+        self.text_runtime: str = self._('Время выполнения')
+        self.text_runtime = self.text_runtime_
 
         self.path_to_original_videos: str = ''  # Директория для анализа и обработки
         self.sub_folder: List[str] = ['Original', 'Splitted', 'Annotated']  # Названия каталогов для обработки видео
@@ -47,23 +65,47 @@ class Settings(Messages):
     @text_runtime.setter
     def text_runtime(self, text):
         if type(text) is not str or len(text) < 1: return self._text_runtime
-        else: self._text_runtime = text
+        else: self._text_runtime = self._(text)
 
-    # Получение цвета текста времени выполнения
+    # Получение цвета обычного текста
     @property
-    def color_runtime(self): return self._color_runtime
+    def color_simple(self): return self._color_simple
 
-    # Установка цвета текста времени выполнения
-    @color_runtime.setter
-    def color_runtime(self, color): self._color_runtime = color
+    # Установка цвета обычного текста
+    @color_simple.setter
+    def color_simple(self, color): self._color_simple = color
 
-    # Получение жирности текста времени выполнения
+    # Получение цвета текста с информацией
     @property
-    def bold_runtime(self): return self._bold_runtime
+    def color_info(self): return self._color_info
 
-    # Установка жирности текста времени выполнения
-    @bold_runtime.setter
-    def bold_runtime(self, bold): self._bold_runtime = bold
+    # Установка цвета текста с информацией
+    @color_info.setter
+    def color_info(self, color): self._color_info = color
+
+    # Получение цвета текста с ошибкой
+    @property
+    def color_err(self): return self._color_err
+
+    # Установка цвета текста с ошибкой
+    @color_err.setter
+    def color_err(self, color): self._color_err = color
+
+    # Получение цвета текста с положительной информацией
+    @property
+    def color_true(self): return self._color_true
+
+    # Установка цвета текста с положительной информацией
+    @color_true.setter
+    def color_true(self, color): self._color_true = color
+
+    # Получение жирности текста
+    @property
+    def bold_text(self): return self._bold_text
+
+    # Установка жирности текста
+    @bold_text.setter
+    def bold_text(self, bold): self._bold_text = bold
 
     # Получение директории для анализа и обработки
     @property

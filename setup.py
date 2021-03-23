@@ -17,7 +17,6 @@ REQUIRED_PACKAGES = [
     'pandas >= 1.2.3',
     'matplotlib >= 3.3.4',
     'jupyterlab >= 3.0.12',
-    'colorama >= 0.4.4',
     'pymediainfo >= 5.0.3'
 ]
 

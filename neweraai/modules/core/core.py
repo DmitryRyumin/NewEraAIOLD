@@ -8,13 +8,14 @@
 # ######################################################################################################################
 # Импорт необходимых инструментов
 # ######################################################################################################################
+from dataclasses import dataclass  # Класс данных
+
 import sys                 # Доступ к некоторым переменным и функциям Python
 import time                # Работа со временем
 import pandas as pd        # Обработка и анализ данных
 import numpy as np         # Научные вычисления
 import matplotlib as mpl   # Визуализация графиков
 import jupyterlab as jlab  # Интерактивная среда разработки для работы с блокнотами, кодом и данными
-import colorama            # Цветной текст терминала
 import pymediainfo         # Получение meta данных из медиафайлов
 import torch               # Машинное обучение от Facebook
 import torchaudio          # Работа с аудио
@@ -25,12 +26,13 @@ from typing import Dict        # Типы данных
 from IPython.display import Markdown, display
 
 # Персональные
-import neweraai  # NewEraAI - новая эра искусственного интеллекта
+import neweraai                                      # NewEraAI - новая эра искусственного интеллекта
 from neweraai.modules.core.settings import Settings  # Глобальный файл настроек
 
 # ######################################################################################################################
 # Сообщения
 # ######################################################################################################################
+@dataclass
 class Messages(Settings):
     """Сообщения"""
 
@@ -38,8 +40,8 @@ class Messages(Settings):
     # Конструктор
     # ------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self):
-        super().__init__()  # Выполнение конструктора из суперкласса
+    def __post_init__(self):
+        super().__post_init__()  # Выполнение конструктора из суперкласса
 
         self._trac_file: str = self._('Файл')
         self._trac_line: str = self._('Линия')
@@ -51,6 +53,7 @@ class Messages(Settings):
 # ######################################################################################################################
 # Ядро модулей
 # ######################################################################################################################
+@dataclass
 class Core(Messages):
     """Ядро модулей"""
 
@@ -58,8 +61,8 @@ class Core(Messages):
     # Конструктор
     # ------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self):
-        super().__init__()  # Выполнение конструктора из суперкласса
+    def __post_init__(self):
+        super().__post_init__()  # Выполнение конструктора из суперкласса
 
         self._is_notebook = self.__is_notebook()  # Определение запуска пакета в Jupyter или аналогах
 
@@ -117,15 +120,15 @@ class Core(Messages):
         tab = '&nbsp;' * 4
 
         if self.is_notebook is True:
-            b = '**' if self.bold_runtime is True else ''
-            cr = self.color_runtime
+            b = '**' if self.bold_text is True else ''
+            cr = self.color_simple
 
             # Отображение
             display(Markdown(('{}' * 9).format(
-                f'<span style=\"color:{self.color_runtime}\">{b}[</span><span style=\"color:#47CFF2\">',
+                f'<span style=\"color:{self.color_simple}\">{b}[</span><span style=\"color:{self.color_info}\">',
                 datetime.now().strftime(self._format_time),
-                f'</span><span style=\"color:{self.color_runtime}\">]</span> ',
-                f'<span style=\"color:{self.color_runtime}\">{self._metadata[0]}:</span>{b}',
+                f'</span><span style=\"color:{self.color_simple}\">]</span> ',
+                f'<span style=\"color:{self.color_simple}\">{self._metadata[0]}:</span>{b}',
                 f'<p><span style=\"color:{cr}\">{tab}{self._metadata[1]}: <u>{neweraai.__author__}</u></span>',
                 f'<br /><span style=\"color:{cr}\">{tab}{self._metadata[2]}: <u>{neweraai.__email__}</u></span>',
                 f'<br /><span style=\"color:{cr}\">{tab}{self._metadata[3]}: <u>{neweraai.__maintainer__}</u></span>',
@@ -146,13 +149,35 @@ class Core(Messages):
         inv_args = self._invalid_arguments.format(class_name + '.' + build_name)
 
         if self.is_notebook is True:
-            b = '**' if self.bold_runtime is True else ''
+            b = '**' if self.bold_text is True else ''
 
             # Отображение
             display(Markdown('{}[{}{}{}] {}{}'.format(
-                f'<span style=\"color:{self.color_runtime}\">{b}', f'</span><span style=\"color:#FF0000\">',
+                f'<span style=\"color:{self.color_simple}\">{b}', f'</span><span style=\"color:{self.color_err}\">',
                 datetime.now().strftime(self._format_time),
-                f'</span><span style=\"color:{self.color_runtime}\">', inv_args, f'{b}</span>'
+                f'</span><span style=\"color:{self.color_simple}\">', inv_args, f'{b}</span>'
+            )))
+
+    # Информация
+    def _info(self, message: str):
+        """
+        Информация
+
+        Аргументы:
+           message - Сообщение
+        """
+
+        tab = '&nbsp;' * 4
+
+        if self.is_notebook is True:
+            b = '**' if self.bold_text is True else ''
+
+            # Отображение
+            display(Markdown(('{}' * 4).format(
+                f'<span style=\"color:{self.color_simple}\">{b}[</span><span style=\"color:{self.color_info}\">',
+                datetime.now().strftime(self._format_time),
+                f'</span><span style=\"color:{self.color_simple}\">]</span> ',
+                f'<span style=\"color:{self.color_simple}\">{message}</span>{b}'
             )))
 
     # Ошибки
@@ -168,12 +193,12 @@ class Core(Messages):
         tab = '&nbsp;' * 4
 
         if self.is_notebook is True:
-            b = '**' if self.bold_runtime is True else ''
-            cr = self.color_runtime
+            b = '**' if self.bold_text is True else ''
+            cr = self.color_simple
 
             # Отображение
             display(Markdown(('{}' * 8).format(
-                f'<span style=\"color:{cr}\">{b}[</span><span style=\"color:#FF0000\">',
+                f'<span style=\"color:{cr}\">{b}[</span><span style=\"color:{self.color_err}\">',
                 datetime.now().strftime(self._format_time),
                 f'</span><span style=\"color:{cr}\">]</span> ',
                 f'<span style=\"color:{cr}\">{message}</span>{b}',
@@ -204,10 +229,10 @@ class Core(Messages):
         t = '--- {}: {} {} ---'.format(self.text_runtime, self._runtime, self._sec)
 
         if self.is_notebook is True:
-            b = '**' if self.bold_runtime is True else ''
+            b = '**' if self.bold_text is True else ''
 
             # Отображение
-            display(Markdown('{}'.format(f'<span style=\"color:{self.color_runtime}\">{b}{t}{b}</span>')))
+            display(Markdown('{}'.format(f'<span style=\"color:{self.color_simple}\">{b}{t}{b}</span>')))
 
     # Индикатор выполнения
     def _progressbar(self, message: str, progress: str):
@@ -222,15 +247,15 @@ class Core(Messages):
         tab = '&nbsp;' * 4
 
         if self.is_notebook is True:
-            b = '**' if self.bold_runtime is True else ''
+            b = '**' if self.bold_text is True else ''
 
             # Отображение
             display(Markdown(('{}' * 5).format(
-                f'<span style=\"color:{self.color_runtime}\">{b}[</span><span style=\"color:#47CFF2\">',
+                f'<span style=\"color:{self.color_simple}\">{b}[</span><span style=\"color:{self.color_info}\">',
                 datetime.now().strftime(self._format_time),
-                f'</span><span style=\"color:{self.color_runtime}\">]</span> ',
-                f'<span style=\"color:{self.color_runtime}\">{message}</span>{b}',
-                f'<p><span style=\"color:{self.color_runtime}\">{tab}{progress}</span></p>'
+                f'</span><span style=\"color:{self.color_simple}\">]</span> ',
+                f'<span style=\"color:{self.color_simple}\">{message}</span>{b}',
+                f'<p><span style=\"color:{self.color_simple}\">{tab}{progress}</span></p>'
             )))
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -280,9 +305,9 @@ class Core(Messages):
 
             pkgs = {
                 'Package': [
-                    'PyTorch', 'Torchaudio', 'NumPy', 'Pandas', 'Matplotlib', 'JupyterLab', 'Colorama', 'Pymediainfo'
+                    'PyTorch', 'Torchaudio', 'NumPy', 'Pandas', 'Matplotlib', 'JupyterLab', 'Pymediainfo'
                 ],
-                'Version': [i.__version__ for i in [torch, torchaudio, np, pd, mpl, jlab, colorama, pymediainfo]]
+                'Version': [i.__version__ for i in [torch, torchaudio, np, pd, mpl, jlab, pymediainfo]]
             }
 
             self._df_pkgs = pd.DataFrame(data = pkgs)  # Версии используемых библиотек

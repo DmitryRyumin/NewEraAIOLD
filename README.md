@@ -35,5 +35,4 @@ pip install --upgrade neweraai
 `pandas` | `1.2.3` | ![PyPI](https://img.shields.io/pypi/v/pandas) |
 `matplotlib` | `3.3.4` | ![PyPI](https://img.shields.io/pypi/v/matplotlib) |
 `jupyterlab` | `3.0.12` | ![PyPI](https://img.shields.io/pypi/v/jupyterlab) |
-`colorama` | `0.4.4` | ![PyPI](https://img.shields.io/pypi/v/colorama) |
 `pymediainfo` | `5.0.3` | ![PyPI](https://img.shields.io/pypi/v/pymediainfo) |
