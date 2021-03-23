@@ -185,9 +185,28 @@ class Core(Messages):
             display(Markdown(self._info_last))
 
     # Ошибки
-    def _other_error(self, message: str):
+    def _error(self, message: str):
         """
         Ошибки
+
+        Аргументы:
+           message - Сообщение
+        """
+
+        if self.is_notebook is True:
+            b = '**' if self.bold_text is True else ''
+
+            # Отображение
+            display(Markdown('{}[{}{}{}] {}{}'.format(
+                f'<span style=\"color:{self.color_simple}\">{b}', f'</span><span style=\"color:{self.color_err}\">',
+                datetime.now().strftime(self._format_time),
+                f'</span><span style=\"color:{self.color_simple}\">', message, f'{b}</span>'
+            )))
+
+    # Прочие ошибки
+    def _other_error(self, message: str):
+        """
+        Прочие ошибки
 
         Аргументы:
            message - Сообщение
@@ -211,6 +230,20 @@ class Core(Messages):
                 f'<br /><span style=\"color:{cr}\">{tab}{self._trac_method}: <u>{trac["name"]}</u></span>',
                 f'<br /><span style=\"color:{cr}\">{tab}{self._trac_type_err}: <u>{trac["type"]}</u></span></p>'
             )))
+
+    # Положительная информация
+    def _info_true(self, message: str):
+        """
+        Положительная информация
+
+        Аргументы:
+           message: Сообщение
+        """
+
+        if self.is_notebook is True:
+            b = '**' if self.bold_text is True else ''
+
+            display(Markdown('{}'.format(f'<span style=\"color:{self.color_true}\">{b}{message}{b}</span>')))
 
     # Начало времени выполнения
     def _r_start(self):

@@ -65,7 +65,7 @@ class Settings(Messages):
     @text_runtime.setter
     def text_runtime(self, text):
         if type(text) is not str or len(text) < 1: return self._text_runtime
-        else: self._text_runtime = self._(text)
+        else: self._text_runtime = text
 
     # Получение цвета обычного текста
     @property
