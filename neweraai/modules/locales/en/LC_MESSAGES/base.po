@@ -96,8 +96,8 @@ msgid "В указанной директории необходимые фай�
 msgstr "The required files were not found in the specified directory ..."
 
 #: neweraai/modules/lab/audio.py:50
-msgid "Извлечение аудиодорожки из видеофайлов ..."
-msgstr "Extracting audio track from video files ..."
+msgid "Извлечение аудиодорожек из видеофайлов ..."
+msgstr "Extracting audio tracks from video files ..."
 
 #: neweraai/modules/lab/audio.py:51
 msgid "из"
