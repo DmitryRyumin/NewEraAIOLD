@@ -16,8 +16,10 @@ import torch         # Машинное обучение от Facebook
 import urllib.parse  # Парсинг URL
 import urllib.error  # Обработка ошибок URL
 import pandas as pd  # Обработка и анализ данных
+import shutil        # Набор функций высокого уровня для обработки файлов, групп файлов, и папок
 
 from pathlib import Path  # Работа с путями в файловой системе
+
 
 from pymediainfo import MediaInfo  # Получение meta данных из медиафайлов
 from datetime import timedelta
@@ -59,6 +61,8 @@ class Messages(Statistics):
         self._url_error: str = self._('Ой! Что-то пошло не так ... не удалось скачать модель{} ...')
 
         self._audio_track_analysis: str = self._('Анализ аудиодорожек ...')
+        self._vad_err: str = self._('Всего видеофайлов на которых VAD не отработал - {}{}{} ...')
+        self._vad_true: str = self._('Все аудиодорожки были проанализированы ... это хороший знак ...')
 
 
 # ######################################################################################################################
@@ -76,6 +80,8 @@ class Audio(Messages):
 
         # DataFrame c видеофайлами из которых аудиодорожка не извлечена
         self._df_unprocessed_audio_from_video: pd.DataFrame = pd.DataFrame()
+        # DataFrame c видеофайлами из которых VAD не отработал
+        self._df_unprocessed_vad: pd.DataFrame = pd.DataFrame()
 
         self._github_repo_vad: str = 'snakers4/silero-vad'  # Репозиторий для загрузки VAD
         self._vad_model: str = 'silero_vad'  # VAD модель
@@ -93,12 +99,13 @@ class Audio(Messages):
     # ------------------------------------------------------------------------------------------------------------------
 
     # Извлечение аудиодорожки из видеофайла
-    def extract_audio_from_video(self, num_to_display: int = 10, runtime: bool = True):
+    def extract_audio_from_video(self, num_to_display: int = 10, logs: bool = True, runtime: bool = True):
         """
         Извлечение аудиодорожки из видеофайла
 
         Аргументы:
-            num_to_display - Количество видеофайлов для отображения из которых аудиодорожка не извлечена
+            num_to_display - Количество видеофайлов для отображения, из которых аудиодорожка не извлечена
+            logs - При необходимости формировать LOG файл
             runtime - Подсчет времени выполнения
         """
 
@@ -108,7 +115,7 @@ class Audio(Messages):
         try:
             # Проверка аргументов
             if (type(num_to_display) is not int or num_to_display > 50 or 0 >= num_to_display
-                    or type(runtime) is not bool): raise TypeError
+                    or type(logs) is not bool or type(runtime) is not bool): raise TypeError
         except TypeError: self._inv_args(__class__.__name__, self.extract_audio_from_video.__name__)
         else:
             if runtime: self._r_start()
@@ -117,7 +124,12 @@ class Audio(Messages):
                 # Директория с оригинальными видео
                 original = os.path.join(self.path_to_original_videos, self.sub_folder[0])
 
-                if os.path.isdir(original) is False: raise IsADirectoryError
+                try:
+                    if not os.path.exists(original): os.makedirs(original)
+                except (FileNotFoundError, TypeError): raise TypeError
+                except Exception: raise TypeError
+                else:
+                    if os.path.isdir(original) is False: raise IsADirectoryError
             except IsADirectoryError: self._other_error(self._folder_not_found.format(original))
             except (TypeError, IndexError): self._other_error(self._som_ww)
             except Exception: self._other_error(self._unknown_err)
@@ -196,7 +208,7 @@ class Audio(Messages):
                                     self._other_error(self._unknown_err); unprocessed_files.append(curr_path); continue
 
                     clear_output(wait = True)
-                    progressbar(len(paths), local_path(paths[-1]))  # Индикатор выполнения
+                    progressbar(len_paths, local_path(paths[-1]))  # Индикатор выполнения
 
                     # Список видеофайлов из которых аудиодорожка не извлечена
                     if len(unprocessed_files) > 0:
@@ -211,12 +223,19 @@ class Audio(Messages):
 
                         self._df_unprocessed_audio_from_video = pd.DataFrame(data = dict_unprocessed_files)
                         self._df_unprocessed_audio_from_video.index += 1
+                        self._df_unprocessed_audio_from_video.index.name = self._keys_id
 
                         # Отображение
                         if self.is_notebook is True:
                             display(self._df_unprocessed_audio_from_video.iloc[0:num_to_display, :])
 
-                        self.df_unprocessed_audio_from_video.to_csv('./out.csv', index = False)
+                        if logs is True:
+                            # Сохранение LOG
+                            res_save_logs = self._save_logs(
+                                self.df_unprocessed_audio_from_video, self.extract_audio_from_video.__name__
+                            )
+
+                            if res_save_logs is True: self._info_true(self._logs_save_true)
                     else:
                         self._info_true(self._extract_audio_from_video_true)
             finally:
@@ -224,19 +243,37 @@ class Audio(Messages):
 
     # VAD (Voice Activity Detector)
     def vad(self, path_to_model: str = pkg_resources.resource_filename('neweraai', 'models'),
-            force_reload: bool = True, runtime: bool = True):
+            force_reload: bool = True, freq: int = 16000, trig_sum: float = 0.25, neg_trig_sum: float = 0.07,
+            num_steps: int = 8, batch_size: int = 200, num_samples_per_window: int = 4000,
+            min_speech_samples: int = 10000, min_silence_samples: int = 500,
+            num_to_display: int = 10, logs: bool = True, runtime: bool = True):
         """
         VAD (Voice Activity Detector)
 
         Аргументы:
             path_to_load_model - Директория для загрузки модели
             force_reload - Принудительная загрузка модели из сети
+            freq - Частота дискретизации
+            trig_sum - Средняя вероятность переключения между перекрывающими окнами (речь)
+            neg_trig_sum - Средняя вероятность переключения между перекрывающими окнами (речи нет)
+            num_steps - Количество перекрывающихся окон для разделения звукового фрагмента
+            batch_size - Размер выборки
+            num_samples_per_window - Количество выборок в каждом окне
+            min_speech_samples - Минимальная длительность речевого фрагмента в сэмплах
+            min_silence_samples - Минимальная длительность тишины в выборках между отдельными речевыми фрагментами
+            num_to_display - Количество видеофайлов для отображения, на которых VAD не отработал
+            logs - При необходимости формировать LOG файл
             runtime - Подсчет времени выполнения
         """
 
+        # Сброс
+        self._df_unprocessed_vad = pd.DataFrame()  # Пустой DataFrame
+
         try:
             # Проверка аргументов
-            if type(path_to_model) is not str or type(force_reload) is not bool or type(runtime) is not bool:
+            if (type(path_to_model) is not str or type(force_reload) is not bool or type(freq) is not int or freq <= 0
+                    or type(num_to_display) is not int or num_to_display > 50 or 0 >= num_to_display
+                    or type(logs) is not bool or type(runtime) is not bool):
                 raise TypeError
         except TypeError: self._inv_args(__class__.__name__, self.vad.__name__)
         else:
@@ -261,10 +298,11 @@ class Audio(Messages):
                     )
             except FileNotFoundError: self._other_error(self._folder_not_found.format(path_to_model))
             except RuntimeError: self._other_error(self._url_error.format(''))
-            except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            except urllib.error.HTTPError as e:
                 self._other_error(self._url_error.format(self._url_error_code.format(
                     f'<span style=\"color:{self.color_err}\">', e.code, f'</span>'
                 )))
+            except urllib.error.URLError: self._other_error(self._url_error.format(''))
             except Exception: self._other_error(self._unknown_err)
             else:
                 get_speech_ts, _, read_audio, _, _, _ = utils
@@ -272,8 +310,24 @@ class Audio(Messages):
                 try:
                     # Директория с оригинальными видео
                     original = os.path.join(self.path_to_original_videos, self.sub_folder[0])
+                    # Директория с разделенными видеофрагментами
+                    splitted = os.path.join(self.path_to_original_videos, self.sub_folder[1])
 
-                    if os.path.isdir(original) is False: raise IsADirectoryError
+                    try:
+                        if not os.path.exists(splitted): os.makedirs(splitted)
+                        else:
+                            # Очистка директории
+                            for filename in os.listdir(splitted):
+                                filepath = os.path.join(splitted, filename)
+                                try:
+                                    shutil.rmtree(filepath)
+                                except OSError: os.remove(filepath)
+                                except Exception: raise Exception
+                    except (FileNotFoundError, TypeError): raise TypeError
+                    except Exception: raise TypeError
+                    else:
+                        if os.path.isdir(original) is False: raise IsADirectoryError
+
                 except IsADirectoryError: self._other_error(self._folder_not_found.format(original))
                 except (TypeError, IndexError): self._other_error(self._som_ww)
                 except Exception: self._other_error(self._unknown_err)
@@ -301,82 +355,137 @@ class Audio(Messages):
                     except TypeError: self._other_error(self._files_not_found)
                     except Exception: self._other_error(self._unknown_err)
                     else:
+                        unprocessed_files = []  # Список видеофайлов на которых VAD не отработал
+
                         # Индикатор выполнения
-                        progressbar = lambda item: self._progressbar(
+                        progressbar = lambda item, info: self._progressbar(
                             self._audio_track_analysis,
-                            self._curr_progress.format(item, len_paths, round(item * 100 / len_paths, 2))
+                            self._curr_progress.format(item, len_paths, round(item * 100 / len_paths, 2), info)
                         )
 
-                        progressbar(0)  # Индикатор выполнения
-
-                        not_found_audiofiles = []  # Список не найденных аудиофайлов
+                        # Локальный путь
+                        local_path = lambda path: \
+                            os.path.join(*Path(path).parts[-abs((len(Path(path).parts) - len(Path(original).parts))):])
 
                         # Проход по всем найденным видеофайлам
                         for i, curr_path in enumerate(paths):
+                            if i != 0:
+                                clear_output(wait = True)
+                                self._info('')  # Информационное сообщение
+
+                            progressbar(i, local_path(curr_path))  # Индикатор выполнения
+
                             try:
                                 if not self.ext_audio: raise ValueError
 
                                 # Путь до аудиофайла
                                 audio_path = os.path.join(Path(curr_path).parent, Path(curr_path).stem + self.ext_audio)
-                            except (TypeError, ValueError): self._other_error(self._som_ww); return None
-                            except Exception: self._other_error(self._unknown_err); return None
+                            except (TypeError, ValueError):
+                                self._other_error(self._som_ww); unprocessed_files.append(curr_path); continue
+                            except Exception:
+                                self._other_error(self._unknown_err); unprocessed_files.append(curr_path); continue
                             else:
                                 # Аудиофайл найден
                                 if os.path.isfile(audio_path) is True:
                                     try:
-                                        wav = read_audio(audio_path)  # Чтение аудиофайла
-                                    except RuntimeError: self._other_error(self._som_ww); return None
-                                    except Exception: self._other_error(self._unknown_err); return None
+                                        wav = read_audio(audio_path, target_sr = freq)  # Чтение аудиофайла
+                                    except RuntimeError:
+                                        self._other_error(self._som_ww); unprocessed_files.append(curr_path); continue
+                                    except Exception:
+                                        self._other_error(self._unknown_err); unprocessed_files.append(curr_path)
+                                        continue
                                     else:
-                                        speech_timestamps = get_speech_ts(wav, model, num_steps = 4)
-
-
-                                        print(len(wav), MediaInfo.parse(curr_path).to_data()['tracks'][0]['frame_count'],
-                                              MediaInfo.parse(curr_path).to_data()['tracks'][2])
-
-                                        print()
-
-                                        for cnt, curr_timestamps in enumerate(speech_timestamps):
-                                            print(audio_path, curr_timestamps,
-                                                  MediaInfo.parse(curr_path).to_data()['tracks'][0]['frame_rate'],
-                                                  MediaInfo.parse(curr_path).to_data()['tracks'][2]['sampling_rate']
-                                                  )
-
-
-                                            fc = int(MediaInfo.parse(curr_path).to_data()['tracks'][0]['frame_count'])
-                                            fr = int(float(MediaInfo.parse(curr_path).to_data()['tracks'][0]['frame_rate']))
-
-                                            # res = int(
-                                            #     curr_timestamps['start'] * fc / len(wav)) / fr
-                                            # res2 = int(curr_timestamps['end'] * fc / len(wav)) / fr
-
-                                            res = curr_timestamps['start'] / 16000
-                                            res2 = curr_timestamps['end'] / 16000
-
-                                            start_time = timedelta(seconds = res)
-                                            end_time = timedelta(seconds = res2)
-
-                                            # start_time = timedelta(seconds = curr_timestamps['start'] / 10000)
-                                            # end_time = timedelta(seconds = curr_timestamps['end'] / 10000)
-                                            #
-                                            diff_time = end_time - start_time
-
-                                            ff = 'ffmpeg -ss {} -i "{}" -to {} -c copy "{}"'.format(
-                                                start_time,
-                                                curr_path,
-                                                diff_time,
-                                                os.path.join(
-                                                    Path(curr_path).parent, Path(curr_path).stem + '_' + str(cnt) + '.mov'
-                                                )
+                                        try:
+                                            # Получение временных меток
+                                            speech_timestamps = get_speech_ts(
+                                                wav, model,
+                                                trig_sum = trig_sum,
+                                                neg_trig_sum = neg_trig_sum,
+                                                num_steps = num_steps,
+                                                batch_size = batch_size,
+                                                num_samples_per_window = num_samples_per_window,
+                                                min_speech_samples = min_speech_samples,
+                                                min_silence_samples = min_silence_samples,
+                                                visualize_probs = False
                                             )
+                                        except Exception:
+                                            self._other_error(self._unknown_err); unprocessed_files.append(curr_path)
+                                            continue
+                                        else:
+                                            # Проход по всем найденным меткам
+                                            for cnt, curr_timestamps in enumerate(speech_timestamps):
+                                                # Начальное время
+                                                start_time = timedelta(seconds = curr_timestamps['start'] / freq)
+                                                # Конечное время
+                                                end_time = timedelta(seconds = curr_timestamps['end'] / freq)
 
-                                            subprocess.call(ff, shell = True)
+                                                # Разница между начальным и конечным временем
+                                                diff_time = end_time - start_time
 
-                                            if i != len_paths: clear_output(wait = True)
+                                                part_audio_path = os.path.join(
+                                                    splitted,
+                                                    Path(curr_path).stem + '_' + str(cnt)
+                                                        + Path(curr_path).suffix.lower()
+                                                )
 
-                                            i += 1  # Текущий индекс
+                                                # Удаление аудиофайла
+                                                if os.path.isfile(part_audio_path) is True:
+                                                    os.remove(part_audio_path)
+
+                                                try:
+                                                    ff = 'ffmpeg -ss {} -i "{}" -to {} -c copy "{}"'.format(
+                                                        start_time, curr_path, diff_time, part_audio_path
+                                                    )
+                                                except IndexError:
+                                                    self._other_error(self._som_ww)
+                                                    unprocessed_files.append(curr_path); continue
+                                                except Exception:
+                                                    self._other_error(self._unknown_err)
+                                                    unprocessed_files.append(curr_path); continue
+                                                else:
+                                                    call = subprocess.call(ff, shell = True)  # VAD
+
+                                                    try:
+                                                        if call == 1: raise OSError
+                                                    except OSError:
+                                                        self._other_error(self._som_ww)
+                                                        unprocessed_files.append(curr_path); continue
+                                                    except Exception:
+                                                        self._other_error(self._unknown_err)
+                                                        unprocessed_files.append(curr_path); continue
                                 else:
-                                    not_found_audiofiles.append(audio_path)
+                                    unprocessed_files.append(curr_path)
+                        clear_output(wait = True)
+                        self._info('')  # Информационное сообщение
+                        progressbar(len_paths, local_path(paths[-1]))  # Индикатор выполнения
 
+                        # Список видеофайлов на которых VAD не отработал
+                        if len(unprocessed_files) > 0:
+                            self._error(self._vad_err.format(
+                                f'<span style=\"color:{self.color_err}\">', len(unprocessed_files), f'</span>'
+                            ))
+
+                            # Формирование DataFrame
+                            dict_unprocessed_files = {
+                                'Files': unprocessed_files
+                            }
+
+                            self._df_unprocessed_vad = pd.DataFrame(data = dict_unprocessed_files)
+                            self._df_unprocessed_vad.index += 1
+                            self._df_unprocessed_vad.index.name = self._keys_id
+
+                            # Отображение
+                            if self.is_notebook is True:
+                                display(self._df_unprocessed_vad.iloc[0:num_to_display, :])
+
+                            if logs is True:
+                                # Сохранение LOG
+                                res_save_logs = self._save_logs(
+                                    self._df_unprocessed_vad, self.vad.__name__
+                                )
+
+                                if res_save_logs is True: self._info_true(self._logs_save_true)
+                        else:
+                            self._info_true(self._vad_true)
             finally:
                 if runtime: self._r_end()

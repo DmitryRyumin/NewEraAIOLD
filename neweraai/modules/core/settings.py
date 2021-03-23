@@ -10,6 +10,8 @@
 # ######################################################################################################################
 from dataclasses import dataclass  # Класс данных
 
+import os  # Взаимодействие с файловой системой
+
 from typing import List  # Типы данных
 
 # Персональные
@@ -33,6 +35,7 @@ class Settings(Messages):
     color_true_: str = '#008001'  # Положительная информация
     bold_text_: bool = True       # Жирность текста
     text_runtime_: str = ''       # Текст времени выполнения
+    logs_: str = ''               # Директория для сохранения LOG файлов
 
     def __post_init__(self):
         super().__post_init__()  # Выполнение конструктора из суперкласса
@@ -47,6 +50,10 @@ class Settings(Messages):
         # Текст времени выполнения
         self.text_runtime: str = self._('Время выполнения')
         self.text_runtime = self.text_runtime_
+
+        # Директория для сохранения LOG файлов
+        self.logs: str = './logs'
+        self.logs = self.logs_
 
         self.path_to_original_videos: str = ''  # Директория для анализа и обработки
         self.sub_folder: List[str] = ['Original', 'Splitted', 'Annotated']  # Названия каталогов для обработки видео
@@ -106,6 +113,16 @@ class Settings(Messages):
     # Установка жирности текста
     @bold_text.setter
     def bold_text(self, bold): self._bold_text = bold
+
+    # Получение директории для сохранения LOG файлов
+    @property
+    def logs(self): return self._logs
+
+    # Установка директории для сохранения LOG файлов
+    @logs.setter
+    def logs(self, path):
+        if type(path) is not str or len(path) < 1: return self._logs
+        else: self._logs = os.path.normpath(path)
 
     # Получение директории для анализа и обработки
     @property

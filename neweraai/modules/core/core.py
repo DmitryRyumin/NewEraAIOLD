@@ -10,6 +10,7 @@
 # ######################################################################################################################
 from dataclasses import dataclass  # Класс данных
 
+import os                  # Взаимодействие с файловой системой
 import sys                 # Доступ к некоторым переменным и функциям Python
 import time                # Работа со временем
 import pandas as pd        # Обработка и анализ данных
@@ -19,6 +20,7 @@ import jupyterlab as jlab  # Интерактивная среда разраб�
 import pymediainfo         # Получение meta данных из медиафайлов
 import torch               # Машинное обучение от Facebook
 import torchaudio          # Работа с аудио
+import urllib.error       # Обработка ошибок URL
 
 from datetime import datetime  # Работа со временем
 from typing import Dict        # Типы данных
@@ -50,6 +52,9 @@ class Messages(Settings):
 
         self._sec: str = self._('сек.')
 
+        self._url_error_code_log: str = self._(' (ошибка {}{}{})')
+        self._url_error_log: str = self._('Ой! Что-то пошло не так ... не удалось сохранить LOG файл{} ...')
+
 # ######################################################################################################################
 # Ядро модулей
 # ######################################################################################################################
@@ -72,6 +77,9 @@ class Core(Messages):
         self._df_pkgs: pd.DataFrame = pd.DataFrame()  # DataFrame c версиями установленных библиотек
 
         self._info_last: str = '' # Последнее информационное сообщение
+
+        self._keys_id: str = 'ID'  # Идентификатор
+        self._ext_for_logs = '.csv'  # Расширение для созранения lOG файлов
 
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
@@ -316,6 +324,50 @@ class Core(Messages):
             if shell == 'ZMQInteractiveShell' or shell == 'Shell': return True
             elif shell == 'TerminalInteractiveShell': return False
             else: return False
+
+    # Создание директории для сохранения LOG файлов
+    def _create_folder_for_logs(self):
+        """
+        Создание директории для сохранения LOG файлов
+
+        Возвращает: True если директория создана или существует, в обратном случае False
+        """
+
+        try:
+            if not os.path.exists(self.logs): os.makedirs(self.logs)
+        except (FileNotFoundError, TypeError): self._other_error(self._som_ww); return False
+        except Exception: self._other_error(self._unknown_err); return False
+        else:
+            return True
+
+    # Сохранение LOG
+    def _save_logs(self, df: pd.DataFrame, name: str):
+        """
+        Сохранение LOG
+
+        Аргументы:
+           df - DataFrame который будет сохранен в LOG файл
+           name - Имя LOG файла
+
+        Возвращает: True если LOG файл сохранен, в обратном случае False
+        """
+
+        # Создание директории для сохранения LOG файлов
+        if self._create_folder_for_logs() is True:
+            # Сохранение LOG файла
+            try:
+                df.to_csv(os.path.join(self.logs, name + self._ext_for_logs), index_label = self._keys_id)
+            except urllib.error.HTTPError as e:
+                self._other_error(self._url_error_log.format(self._url_error_code_log.format(
+                    f'<span style=\"color:{self.color_err}\">', e.code, f'</span>'
+                )))
+            except urllib.error.URLError: self._other_error(self._url_error_log.format(''))
+            except Exception:
+                self._other_error(self._unknown_err); return False
+            else:
+                return True
+
+        return False
 
     # ------------------------------------------------------------------------------------------------------------------
     # Внешние методы

@@ -13,6 +13,10 @@ from dataclasses import dataclass  # Класс данных
 # Персональные
 from neweraai.modules.lab.audio import Audio  # Аудио
 
+# Подавление Warning
+import warnings
+warnings.filterwarnings('ignore', category = UserWarning)
+
 # ######################################################################################################################
 # Сборка
 # ######################################################################################################################

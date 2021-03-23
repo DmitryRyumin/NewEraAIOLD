@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"POT-Creation-Date: 2021-03-22 23:23+0300\n"
-"PO-Revision-Date: 2021-03-22 23:23+0300\n"
+"POT-Creation-Date: 2021-03-23 23:23+0300\n"
+"PO-Revision-Date: 2021-03-23 23:23+0300\n"
 "Last-Translator: Dmitry Ryumin <dl_03.03.1991@mail.ru>\n"
 "Language-Team: English <dl_03.03.1991@mail.ru>\n"
 "MIME-Version: 1.0\n"
@@ -15,82 +15,122 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: neweraai/modules/core/core.py:44
+#: neweraai/modules/core/core.py:48
 msgid "Файл"
 msgstr "File"
 
-#: neweraai/modules/core/core.py:45
+#: neweraai/modules/core/core.py:49
 msgid "Линия"
 msgstr "Line"
 
-#: neweraai/modules/core/core.py:46
+#: neweraai/modules/core/core.py:50
 msgid "Метод"
 msgstr "Method"
 
-#: neweraai/modules/core/core.py:47
+#: neweraai/modules/core/core.py:51
 msgid "Тип ошибки"
 msgstr "Type error"
 
-#: neweraai/modules/core/core.py:49
+#: neweraai/modules/core/core.py:53
 msgid "сек."
 msgstr "sec."
 
-#: neweraai/modules/core/messages.py:30
+#: neweraai/modules/core/core.py:55 neweraai/modules/lab/audio.py:60
+msgid " (ошибка {}{}{})"
+msgstr " (error {}{}{})"
+
+#: neweraai/modules/core/core.py:56
+msgid "Ой! Что-то пошло не так ... не удалось сохранить LOG файл{} ..."
+msgstr "Oh! Something went wrong ... failed to save LOG file{} ..."
+
+#: neweraai/modules/core/messages.py:33
 msgid "NewEraAI - новая эра искусственного интеллекта"
 msgstr "NewEraAI - New Era Artificial Intelligence"
 
-#: neweraai/modules/core/messages.py:31
+#: neweraai/modules/core/messages.py:34
 msgid "Email"
 msgstr "Email"
 
-#: neweraai/modules/core/messages.py:31
+#: neweraai/modules/core/messages.py:34
 msgid "Автор"
 msgstr "Author"
 
-#: neweraai/modules/core/messages.py:32
+#: neweraai/modules/core/messages.py:35
 msgid "Версия"
 msgstr "Version"
 
-#: neweraai/modules/core/messages.py:32
+#: neweraai/modules/core/messages.py:35
 msgid "Лицензия"
 msgstr "License"
 
-#: neweraai/modules/core/messages.py:32
+#: neweraai/modules/core/messages.py:35
 msgid "Сопровождающие"
 msgstr "Maintainers"
 
-#: neweraai/modules/core/messages.py:37
+#: neweraai/modules/core/messages.py:40
 msgid "\"{}.{}\" не поддерживается в данной среде использования пакета ..."
 msgstr "\"{}.{}\" is not supported in this package usage environment ..."
 
-#: neweraai/modules/core/messages.py:38
+#: neweraai/modules/core/messages.py:41
 msgid "Неверные типы или значения аргументов в \"{}\" ..."
 msgstr "Invalid argument types or values in \"{}\" ..."
 
-#: neweraai/modules/core/messages.py:40
+#: neweraai/modules/core/messages.py:43
 msgid "Ой! Что-то пошло не так ... смотрите настройки ядра и цепочку выполнения действий ..."
 msgstr "Oh! Something went wrong ... see kernel settings and execution flow ..."
 
-#: neweraai/modules/core/messages.py:42
+#: neweraai/modules/core/messages.py:44
 msgid "Прям беда! Не обработанную ошибку необходимо проанализировать и выявить причину ..."
 msgstr "Straight trouble! An unhandled error must be analyzed and the cause identified ..."
 
-#: neweraai/modules/core/settings.py:29
+#: neweraai/modules/core/messages.py:48
+msgid "Лог файл успешно сохранен ..."
+msgstr "Log file saved successfully ..."
+
+#: neweraai/modules/core/settings.py:51
 msgid "Время выполнения"
 msgstr "Lead time"
 
-#: neweraai/modules/lab/audio.py:41
+#: neweraai/modules/lab/audio.py:49
 msgid "В указанной директории необходимые файлы не найдены ..."
 msgstr "The required files were not found in the specified directory ..."
 
-#: neweraai/modules/lab/audio.py:42
-msgid "Извлечение аудиодорожки из видеофайла ..."
-msgstr "Extracting audio track from video file ..."
+#: neweraai/modules/lab/audio.py:50
+msgid "Извлечение аудиодорожки из видеофайлов ..."
+msgstr "Extracting audio track from video files ..."
 
-#: neweraai/modules/lab/audio.py:43
+#: neweraai/modules/lab/audio.py:51
 msgid "из"
 msgstr "from"
 
-#: neweraai/modules/lab/audio.py:44
+#: neweraai/modules/lab/audio.py:52
 msgid "Директория \"{}\" не найдена ..."
 msgstr "Directory \"{}\" not found ..."
+
+#: neweraai/modules/lab/audio.py:53
+msgid "Всего видеофайлов из которых аудиодорожка не была извлечена - {}{}{} ..."
+msgstr "Total video files from which the audio track has not been extracted - {}{}{} ..."
+
+#: neweraai/modules/lab/audio.py:55
+msgid "Все аудиодорожки были успешно извлечены ... это хороший знак ..."
+msgstr "All audio tracks have been extracted successfully ... this is a good sign ..."
+
+#: neweraai/modules/lab/audio.py:58
+msgid "Загрузка модели \"{}{}{}\" из репозитория {} ..."
+msgstr "Downloading model \"{}{}{}\" from repository {} ..."
+
+#: neweraai/modules/lab/audio.py:61
+msgid "Ой! Что-то пошло не так ... не удалось скачать модель{} ..."
+msgstr "Oh! Something went wrong ... failed to download model{} ..."
+
+#: neweraai/modules/lab/audio.py:63
+msgid "Анализ аудиодорожек ..."
+msgstr "Analyzing audio tracks ..."
+
+#: neweraai/modules/lab/audio.py:64
+msgid "Всего видеофайлов на которых VAD не отработал - {}{}{} ..."
+msgstr "Total video files on which VAD did not work - {}{}{} ..."
+
+#: neweraai/modules/lab/audio.py:65
+msgid "Все аудиодорожки были проанализированы ... это хороший знак ..."
+msgstr "All audio tracks have been analyzed ... this is a good sign ..."

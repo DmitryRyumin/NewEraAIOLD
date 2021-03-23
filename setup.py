@@ -31,6 +31,7 @@ License :: OSI Approved :: MIT License
 Programming Language :: Python
 Programming Language :: Python :: 3
 Programming Language :: Python :: 3.8
+Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3 :: Only
 Programming Language :: Python :: Implementation :: CPython
 Topic :: Scientific/Engineering
@@ -64,8 +65,13 @@ with open('README.md', 'r') as fh:
         keywords = ['NewEraAI'],
         include_package_data = True,
         classifiers = [_f for _f in CLASSIFIERS.split('\n') if _f],
-        python_requires = '>=3.8',
+        python_requires = '>=3.8, <4',
         entry_points = {
             'console_scripts': [],
+        },
+        project_urls = {
+            'Bug Reports': 'https://github.com/DmitryRyumin/NewEraAI/issues',
+            'Documentation': 'https://github.com/DmitryRyumin/NewEraAI',
+            'Source Code': 'https://github.com/DmitryRyumin/NewEraAI/tree/main/neweraai'
         },
     )
