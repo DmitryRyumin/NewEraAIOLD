@@ -2,6 +2,12 @@
 
 ## March 24, 2021
 
+> `1.0.0-rc3`
+
+<h4><span style="color:#DB534F;">Fixed bugs</span></h4>
+
+- Fixed a bug in the `vad` method of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class, which generate the `ZeroDivisionError` exception when the argument `trig_sum` value was entered incorrectly
+
 > `1.0.0-rc2`
 
 <h4><span style="color:#008000;">What's new</span></h4>

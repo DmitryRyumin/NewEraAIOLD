@@ -515,13 +515,17 @@ class Audio(Messages):
                                                         self._other_error(self._unknown_err)
                                                         unprocessed_files.append(curr_path); continue
 
-                                            clear_output(wait = True)
-                                            self._info('')  # Информационное сообщение
-                                            # Индикатор выполнения
-                                            progressbar_vad(
-                                                len_paths, local_path(paths[-1]),
-                                                len_speech_timestamps, len_speech_timestamps
-                                            )
+                                            # VAD нашел речь
+                                            if len_speech_timestamps > 0:
+                                                clear_output(wait = True)
+                                                self._info('')  # Информационное сообщение
+                                                # Индикатор выполнения
+                                                progressbar_vad(
+                                                    len_paths, local_path(paths[-1]),
+                                                    len_speech_timestamps, len_speech_timestamps
+                                                )
+                                            else:
+                                                unprocessed_files.append(curr_path)
                                 else:
                                     unprocessed_files.append(curr_path)
                         clear_output(wait = True)
