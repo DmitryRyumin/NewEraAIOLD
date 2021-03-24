@@ -7,7 +7,7 @@
 <h4><span style="color:#008000;">What's new</span></h4>
 
 - Added warning suppression (`UserWarning`, `FutureWarning`)
-- Added arguments (`type_encode`, `crf_value` `presets_crf_encode`) to the `vad` method of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class
+- Added arguments (`type_encode`, `crf_value`, `presets_crf_encode`) to the `vad` method of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class
 
 <h4><span style="color:#247CB4;">Changes</span></h4>
 

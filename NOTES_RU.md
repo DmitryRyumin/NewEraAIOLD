@@ -7,7 +7,7 @@
 <h4><span style="color:#008000;">Что нового</span></h4>
 
 - Добавлено подавление предупреждений (`UserWarning`, `FutureWarning`)
-- Добавлены аргументы (`type_encode`, `crf_value` `presets_crf_encode`) в метод `vad` класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py)
+- Добавлены аргументы (`type_encode`, `crf_value`, `presets_crf_encode`) в метод `vad` класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py)
 
 <h4><span style="color:#247CB4;">Изменения</span></h4>
 
