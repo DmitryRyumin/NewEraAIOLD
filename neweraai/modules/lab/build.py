@@ -8,14 +8,14 @@
 # ######################################################################################################################
 # Импорт необходимых инструментов
 # ######################################################################################################################
+# Подавление Warning
+import warnings
+for warn in [UserWarning, FutureWarning]: warnings.filterwarnings('ignore', category = warn)
+
 from dataclasses import dataclass  # Класс данных
 
 # Персональные
 from neweraai.modules.lab.audio import Audio  # Аудио
-
-# Подавление Warning
-import warnings
-warnings.filterwarnings('ignore', category = UserWarning)
 
 # ######################################################################################################################
 # Сборка

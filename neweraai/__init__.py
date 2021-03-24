@@ -7,7 +7,7 @@ __title__ = 'NewEraAI'
 __summary__ = 'NewEraAI - New Era Artificial Intelligence'
 __uri__ = 'https://github.com/DmitryRyumin/NewEraAI'
 
-__version__ = '1.0.0-rc1'
+__version__ = '1.0.0-rc2'
 
 __author__ = 'Dmitry Ryumin'
 __email__ = 'dl_03.03.1991@mail.ru'

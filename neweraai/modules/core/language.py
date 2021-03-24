@@ -15,6 +15,10 @@
 #     3. locate msgfmt.py
 #     4. /usr/local/Cellar/python@3.8/3.8.8/Frameworks/Python.framework/Versions/3.8/share/doc/python3.8/examples/Tools/
 #        i18n/msgfmt.py neweraai/modules/locales/en/LC_MESSAGES/base.po neweraai/modules/locales/en/LC_MESSAGES/base
+# Подавление Warning
+import warnings
+for warn in [UserWarning, FutureWarning]: warnings.filterwarnings('ignore', category = warn)
+
 from dataclasses import dataclass  # Класс данных
 
 import gettext  # Формирование языковых пакетов

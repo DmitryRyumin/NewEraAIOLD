@@ -8,6 +8,10 @@
 # ######################################################################################################################
 # Импорт необходимых инструментов
 # ######################################################################################################################
+# Подавление Warning
+import warnings
+for warn in [UserWarning, FutureWarning]: warnings.filterwarnings('ignore', category = warn)
+
 from dataclasses import dataclass  # Класс данных
 
 import os            # Взаимодействие с файловой системой
@@ -19,7 +23,6 @@ import pandas as pd  # Обработка и анализ данных
 import shutil        # Набор функций высокого уровня для обработки файлов, групп файлов, и папок
 
 from pathlib import Path  # Работа с путями в файловой системе
-
 
 from pymediainfo import MediaInfo  # Получение meta данных из медиафайлов
 from datetime import timedelta
@@ -48,7 +51,10 @@ class Messages(Statistics):
 
         self._files_not_found: str = self._('В указанной директории необходимые файлы не найдены ...')
         self._extract_audio_from_video: str = self._('Извлечение аудиодорожек из видеофайлов ...')
-        self._curr_progress: str = '{} ' + self._('из') + ' {} ({}%) ... {} ...'
+        self._from_precent = self._('из')
+        self._curr_progress: str = '{} ' + self._from_precent + ' {} ({}%) ... {} ...'
+        self._curr_progress_vad: str = ('{} ' + self._from_precent + ' {} ({}%) ... {} ({} '
+                                        + self._from_precent + ' {} - {}%) ...')
         self._folder_not_found: str = self._('Директория "{}" не найдена ...')
         self._extract_audio_from_video_err: str = self._('Всего видеофайлов из которых аудиодорожка не была '
                                                         'извлечена - {}{}{} ...')
@@ -85,6 +91,12 @@ class Audio(Messages):
 
         self._github_repo_vad: str = 'snakers4/silero-vad'  # Репозиторий для загрузки VAD
         self._vad_model: str = 'silero_vad'  # VAD модель
+
+        self._types_encode = ('qscale', 'crf')  # Типы кодирования
+        # Параметр обеспечивающий определенную скорость кодирования и сжатия
+        self._presets_crf_encode = (
+            'ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow'
+        )
 
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
@@ -243,8 +255,9 @@ class Audio(Messages):
 
     # VAD (Voice Activity Detector)
     def vad(self, path_to_model: str = pkg_resources.resource_filename('neweraai', 'models'),
-            force_reload: bool = True, freq: int = 16000, trig_sum: float = 0.25, neg_trig_sum: float = 0.07,
-            num_steps: int = 8, batch_size: int = 200, num_samples_per_window: int = 4000,
+            force_reload: bool = True, type_encode: str or None = None, crf_value: int = 23,
+            presets_crf_encode: str or None = None, freq: int = 16000, trig_sum: float = 0.25,
+            neg_trig_sum: float = 0.07, num_steps: int = 8, batch_size: int = 200, num_samples_per_window: int = 4000,
             min_speech_samples: int = 10000, min_silence_samples: int = 500,
             num_to_display: int = 10, logs: bool = True, runtime: bool = True):
         """
@@ -253,6 +266,9 @@ class Audio(Messages):
         Аргументы:
             path_to_load_model - Директория для загрузки модели
             force_reload - Принудительная загрузка модели из сети
+            type_encode - Тип кодирования
+            crf_value - Качество кодирования
+            presets_crf_encode - Параметр обеспечивающий определенную скорость кодирования и сжатия
             freq - Частота дискретизации
             trig_sum - Средняя вероятность переключения между перекрывающими окнами (речь)
             neg_trig_sum - Средняя вероятность переключения между перекрывающими окнами (речи нет)
@@ -270,8 +286,14 @@ class Audio(Messages):
         self._df_unprocessed_vad = pd.DataFrame()  # Пустой DataFrame
 
         try:
+            if type_encode is None: type_encode = self._types_encode[1]
+            if presets_crf_encode is None: presets_crf_encode = self._presets_crf_encode[5]
+
             # Проверка аргументов
-            if (type(path_to_model) is not str or type(force_reload) is not bool or type(freq) is not int or freq <= 0
+            if (type(path_to_model) is not str or type(force_reload) is not bool or type(type_encode) is not str
+                    or (type_encode in self._types_encode) is False or type(presets_crf_encode) is not str
+                    or (presets_crf_encode in self._presets_crf_encode) is False or type(crf_value) is not int
+                    or crf_value < 0 or crf_value > 51 or type(freq) is not int or freq <= 0
                     or type(num_to_display) is not int or num_to_display > 50 or 0 >= num_to_display
                     or type(trig_sum) is not float or trig_sum < 0 or type(neg_trig_sum) is not float
                     or neg_trig_sum < 0 or type(num_steps) is not int or num_steps < 0
@@ -365,7 +387,17 @@ class Audio(Messages):
                         # Индикатор выполнения
                         progressbar = lambda item, info: self._progressbar(
                             self._audio_track_analysis,
-                            self._curr_progress.format(item, len_paths, round(item * 100 / len_paths, 2), info)
+                            self._curr_progress.format(
+                                item, len_paths, round(item * 100 / len_paths, 2), info
+                            )
+                        )
+
+                        progressbar_vad = lambda item, info, item2, len_timestamp: self._progressbar(
+                            self._audio_track_analysis,
+                            self._curr_progress_vad.format(
+                                item, len_paths, round(item * 100 / len_paths, 2), info,
+                                item2, len_timestamp, round(item2 * 100 / len_timestamp, 2)
+                            )
                         )
 
                         # Локальный путь
@@ -417,8 +449,16 @@ class Audio(Messages):
                                             self._other_error(self._unknown_err); unprocessed_files.append(curr_path)
                                             continue
                                         else:
+                                            len_speech_timestamps = len(speech_timestamps)
+
                                             # Проход по всем найденным меткам
                                             for cnt, curr_timestamps in enumerate(speech_timestamps):
+                                                clear_output(wait = True)
+                                                self._info('')  # Информационное сообщение
+
+                                                # Индикатор выполнения
+                                                progressbar_vad(i, local_path(curr_path), cnt, len_speech_timestamps)
+
                                                 # Начальное время
                                                 start_time = timedelta(seconds = curr_timestamps['start'] / freq)
                                                 # Конечное время
@@ -438,9 +478,25 @@ class Audio(Messages):
                                                     os.remove(part_audio_path)
 
                                                 try:
-                                                    ff = 'ffmpeg -ss {} -i "{}" -to {} -c copy "{}"'.format(
-                                                        start_time, curr_path, diff_time, part_audio_path
-                                                    )
+                                                    # Работает с пустыми кадрами в конце видео
+                                                    # ff = 'ffmpeg -ss {} -i "{}" -to {} -c copy "{}"'.format(
+                                                    #     start_time, curr_path, diff_time, part_audio_path
+                                                    # )
+
+                                                    # Варианты кодирования
+                                                    if type_encode == self._types_encode[0]:
+                                                        # https://trac.ffmpeg.org/wiki/Encode/MPEG-4
+                                                        ff = 'ffmpeg -ss {} -i "{}" -{} 0 -to {} "{}"'.format(
+                                                            start_time, curr_path, type_encode, diff_time,
+                                                            part_audio_path
+                                                        )
+                                                    elif type_encode == self._types_encode[1]:
+                                                        # https://trac.ffmpeg.org/wiki/Encode/H.264
+                                                        ff = ('ffmpeg -ss {} -i "{}" -{} {} '
+                                                              '-preset {} -to {} "{}"').format(
+                                                            start_time, curr_path, type_encode, crf_value,
+                                                            presets_crf_encode, diff_time, part_audio_path
+                                                        )
                                                 except IndexError:
                                                     self._other_error(self._som_ww)
                                                     unprocessed_files.append(curr_path); continue
@@ -458,21 +514,34 @@ class Audio(Messages):
                                                     except Exception:
                                                         self._other_error(self._unknown_err)
                                                         unprocessed_files.append(curr_path); continue
+
+                                            clear_output(wait = True)
+                                            self._info('')  # Информационное сообщение
+                                            # Индикатор выполнения
+                                            progressbar_vad(
+                                                len_paths, local_path(paths[-1]),
+                                                len_speech_timestamps, len_speech_timestamps
+                                            )
                                 else:
                                     unprocessed_files.append(curr_path)
                         clear_output(wait = True)
                         self._info('')  # Информационное сообщение
                         progressbar(len_paths, local_path(paths[-1]))  # Индикатор выполнения
 
+                        # Уникальные значения
+                        unprocessed_files_unique = set()
+                        for x in unprocessed_files: unprocessed_files_unique.add(x)
+                        unprocessed_files_unique = list(unprocessed_files_unique)
+
                         # Список видеофайлов на которых VAD не отработал
-                        if len(unprocessed_files) > 0:
+                        if len(unprocessed_files_unique) > 0:
                             self._error(self._vad_err.format(
-                                f'<span style=\"color:{self.color_err}\">', len(unprocessed_files), f'</span>'
+                                f'<span style=\"color:{self.color_err}\">', len(unprocessed_files_unique), f'</span>'
                             ))
 
                             # Формирование DataFrame
                             dict_unprocessed_files = {
-                                'Files': unprocessed_files
+                                'Files': unprocessed_files_unique
                             }
 
                             self._df_unprocessed_vad = pd.DataFrame(data = dict_unprocessed_files)

@@ -15,122 +15,122 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: neweraai/modules/core/core.py:48
+#: neweraai/modules/core/core.py:52
 msgid "Файл"
 msgstr ""
 
-#: neweraai/modules/core/core.py:49
+#: neweraai/modules/core/core.py:53
 msgid "Линия"
 msgstr ""
 
-#: neweraai/modules/core/core.py:50
+#: neweraai/modules/core/core.py:54
 msgid "Метод"
 msgstr ""
 
-#: neweraai/modules/core/core.py:51
+#: neweraai/modules/core/core.py:55
 msgid "Тип ошибки"
 msgstr ""
 
-#: neweraai/modules/core/core.py:53
+#: neweraai/modules/core/core.py:57
 msgid "сек."
 msgstr ""
 
-#: neweraai/modules/core/core.py:55 neweraai/modules/lab/audio.py:60
+#: neweraai/modules/core/core.py:59 neweraai/modules/lab/audio.py:66
 msgid " (ошибка {}{}{})"
 msgstr ""
 
-#: neweraai/modules/core/core.py:56
+#: neweraai/modules/core/core.py:60
 msgid "Ой! Что-то пошло не так ... не удалось сохранить LOG файл{} ..."
 msgstr ""
 
-#: neweraai/modules/core/messages.py:33
+#: neweraai/modules/core/messages.py:37
 msgid "NewEraAI - новая эра искусственного интеллекта"
 msgstr ""
 
-#: neweraai/modules/core/messages.py:34
+#: neweraai/modules/core/messages.py:38
 msgid "Email"
 msgstr ""
 
-#: neweraai/modules/core/messages.py:34
+#: neweraai/modules/core/messages.py:38
 msgid "Автор"
 msgstr ""
 
-#: neweraai/modules/core/messages.py:35
+#: neweraai/modules/core/messages.py:39
 msgid "Версия"
 msgstr ""
 
-#: neweraai/modules/core/messages.py:35
+#: neweraai/modules/core/messages.py:39
 msgid "Лицензия"
 msgstr ""
 
-#: neweraai/modules/core/messages.py:35
+#: neweraai/modules/core/messages.py:39
 msgid "Сопровождающие"
 msgstr ""
 
-#: neweraai/modules/core/messages.py:40
+#: neweraai/modules/core/messages.py:44
 msgid "\"{}.{}\" не поддерживается в данной среде использования пакета ..."
 msgstr ""
 
-#: neweraai/modules/core/messages.py:41
+#: neweraai/modules/core/messages.py:45
 msgid "Неверные типы или значения аргументов в \"{}\" ..."
 msgstr ""
 
-#: neweraai/modules/core/messages.py:43
+#: neweraai/modules/core/messages.py:47
 msgid "Ой! Что-то пошло не так ... смотрите настройки ядра и цепочку выполнения действий ..."
 msgstr ""
 
-#: neweraai/modules/core/messages.py:45
+#: neweraai/modules/core/messages.py:49
 msgid "Прям беда! Не обработанную ошибку необходимо проанализировать и выявить причину ..."
 msgstr ""
 
-#: neweraai/modules/core/messages.py:48
+#: neweraai/modules/core/messages.py:52
 msgid "Лог файл успешно сохранен ..."
 msgstr ""
 
-#: neweraai/modules/core/settings.py:51
+#: neweraai/modules/core/settings.py:55
 msgid "Время выполнения"
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:49
+#: neweraai/modules/lab/audio.py:52
 msgid "В указанной директории необходимые файлы не найдены ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:50
+#: neweraai/modules/lab/audio.py:53
 msgid "Извлечение аудиодорожек из видеофайлов ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:51
+#: neweraai/modules/lab/audio.py:54
 msgid "из"
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:52
+#: neweraai/modules/lab/audio.py:58
 msgid "Директория \"{}\" не найдена ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:53
+#: neweraai/modules/lab/audio.py:59
 msgid "Всего видеофайлов из которых аудиодорожка не была извлечена - {}{}{} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:55
+#: neweraai/modules/lab/audio.py:61
 msgid "Все аудиодорожки были успешно извлечены ... это хороший знак ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:58
+#: neweraai/modules/lab/audio.py:64
 msgid "Загрузка модели \"{}{}{}\" из репозитория {} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:61
+#: neweraai/modules/lab/audio.py:67
 msgid "Ой! Что-то пошло не так ... не удалось скачать модель{} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:63
+#: neweraai/modules/lab/audio.py:69
 msgid "Анализ аудиодорожек ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:64
+#: neweraai/modules/lab/audio.py:70
 msgid "Всего видеофайлов на которых VAD не отработал - {}{}{} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:65
+#: neweraai/modules/lab/audio.py:71
 msgid "Все аудиодорожки были проанализированы ... это хороший знак ..."
 msgstr ""

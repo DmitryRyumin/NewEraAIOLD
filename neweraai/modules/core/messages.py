@@ -8,6 +8,10 @@
 # ######################################################################################################################
 # Импорт необходимых инструментов
 # ######################################################################################################################
+# Подавление Warning
+import warnings
+for warn in [UserWarning, FutureWarning]: warnings.filterwarnings('ignore', category = warn)
+
 from dataclasses import dataclass  # Класс данных
 
 from typing import List  # Типы данных
