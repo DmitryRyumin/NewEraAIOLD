@@ -11,7 +11,7 @@
 
 <h4><span style="color:#247CB4;">Изменения</span></h4>
 
-- Индикатор выполнения внутри метода `vad` класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) отображает, как общий прогресс анализа аудиодорожек, так и прогресс формирования видеофграгментов по временным меткам, которые получены с помощью VAD
+- Индикатор выполнения внутри метода `vad` класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) отображает, как общий прогресс анализа аудиодорожек, так и прогресс формирования видеофрагментов по временным меткам, которые получены с помощью VAD
 
 <h4><span style="color:#DB534F;">Исправления</span></h4>
 
