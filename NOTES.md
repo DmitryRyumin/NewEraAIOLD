@@ -17,6 +17,7 @@
 
 - Speech recognition class [Speech](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/speech.py) can function separately from the class [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py)
 - Improved the functionality of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class by analyzing and processing audio information without first saving it to local storage
+- Default language changed from `Russian` to `English`
 - Updated require packages
 
 <h4><span style="color:#DB534F;">Fixed bugs</span></h4>

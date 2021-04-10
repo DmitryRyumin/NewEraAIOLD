@@ -17,6 +17,7 @@
 
 - Класс распознавания речи [Speech](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/speech.py) может функционировать отдельно от класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py)
 - Улучшена функциональность класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) за счет анализа и обработки аудиоинформации без ее предварительного сохранения на локальном хранилище
+- Язык по умолчанию изменен с `русский` на `английский`
 - Обновлены зависимости
 
 <h4><span style="color:#DB534F;">Исправления</span></h4>
