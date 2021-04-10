@@ -324,3 +324,46 @@
 #                     # Удаление аудиофайлов
 #                     for file in part_audio_path:
 #                         if os.path.isfile(file) is True: os.remove(file)
+
+
+# @staticmethod
+# def __rusavic(path, start_time, end_time, part_video_path, part_audio_path):
+#     # Фильтр игнорирования речи
+#     import json
+#
+#     try:
+#         with open(path + '.json') as f:
+#             data = json.load(f)
+#     except Exception:
+#         return False
+#     else:
+#         l = []
+#
+#         for i in data[list(data.keys())[0]]:
+#             res = (i[1] - i[0]) / 2
+#             l.append(round(i[0] + res, 3))
+#
+#         for curr_val in l:
+#             if start_time.total_seconds() < curr_val < end_time.total_seconds():
+#                 try:
+#                     # Удаление видеофайла
+#                     if os.path.isfile(part_video_path) is True: os.remove(part_video_path)
+#                     # Удаление аудиофайлов
+#                     for file in part_audio_path:
+#                         if os.path.isfile(file) is True: os.remove(file)
+#                 except Exception:
+#                     return False
+#                 else:
+#                     return True
+#
+#         return False
+
+
+# ######################################################################################################
+# RUSAVIC
+# ######################################################################################################
+# if self.__rusavic(
+#         os.path.join(Path(self.__curr_path).parent, Path(self.__curr_path).stem),
+#         start_time, end_time, self.__part_video_path, self.__part_audio_path
+# ) is True: continue
+# ######################################################################################################

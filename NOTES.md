@@ -2,13 +2,20 @@
 
 ## April 10, 2021
 
+> `1.0.0-rc5`
+
+<h4><span style="color:#008000;">What's new</span></h4>
+
+- Added the ability to recognize the English language
+- Added the ability to automatically create directories for the speech recognition filter (argument `create_folder_filter_sr` in the `vad` method of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class)
+
 > `1.0.0-rc4`
 
 <h4><span style="color:#008000;">What's new</span></h4>
 
 - Added the ability to block the execution of all external methods (argument `run`)
-- New method `_neai.show_notebook_history_output()` to display the last result from the output history in Jupyter cells
-- New method `_neai.media_info(...)` for get and display meta data from media files
+- New method `show_notebook_history_output` of the [Core](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/core.py) class to display the last result from the output history in Jupyter cells
+- New method `media_info` of the [Core](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/core.py) class for get and display meta data from media files
 - Added custom [Exceptions](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/exceptions.py) for certain errors that may occur during work
 - New class [Download](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/download.py) for download files from URL
 - New class [Unzip](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/unzip.py) for unzipping archives

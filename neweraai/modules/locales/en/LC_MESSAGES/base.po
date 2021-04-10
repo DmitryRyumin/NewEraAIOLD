@@ -39,7 +39,7 @@ msgstr "sec."
 msgid "расширение файла должно быть одно из \"{}\" ..."
 msgstr "the file extension must be one of \"{}\" ..."
 
-#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:65
+#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:66
 #: neweraai/modules/lab/download.py:47
 msgid " (ошибка {})"
 msgstr " (error {})"
@@ -144,39 +144,43 @@ msgstr "All audio tracks have been extracted successfully ... this is a good sig
 msgid "Загрузка VAD модели \"{}\" из репозитория {} ..."
 msgstr "Downloading VAD model \"{}\" from repository {} ..."
 
-#: neweraai/modules/lab/audio.py:66
+#: neweraai/modules/lab/audio.py:64
+msgid "Создание директорий под фильтр распознавания речи ..."
+msgstr "Creating directories for speech recognition filter  ..."
+
+#: neweraai/modules/lab/audio.py:67
 msgid "не удалось скачать модель{} ..."
 msgstr "failed to download model{} ..."
 
-#: neweraai/modules/lab/audio.py:68
+#: neweraai/modules/lab/audio.py:69
 msgid "Анализ аудиодорожек {}..."
 msgstr "Analyzing audio tracks{} ..."
 
-#: neweraai/modules/lab/audio.py:69
-msgid "и распознавание речи "
-msgstr "and speech recognition "
-
 #: neweraai/modules/lab/audio.py:70
+msgid " и распознавание речи "
+msgstr " and speech recognition "
+
+#: neweraai/modules/lab/audio.py:71
 msgid "Всего видеофайлов на которых VAD не отработал - {} ..."
 msgstr "Total video files on which VAD did not work - {} ..."
 
-#: neweraai/modules/lab/audio.py:71
+#: neweraai/modules/lab/audio.py:72
 msgid "Всего видеофрагментов, которые не сохранились - {} ..."
 msgstr "Total video fragments that were not saved - {} ..."
 
-#: neweraai/modules/lab/audio.py:72
+#: neweraai/modules/lab/audio.py:73
 msgid "Все аудиодорожки были проанализированы ... это хороший знак ..."
 msgstr "All audio tracks have been analyzed ... this is a good sign ..."
 
-#: neweraai/modules/lab/audio.py:74
+#: neweraai/modules/lab/audio.py:75
 msgid "тип кодирования видео должен быть одним из \"{}\" ..."
 msgstr "video encoding type must be one of \"{}\" ..."
 
-#: neweraai/modules/lab/audio.py:75
+#: neweraai/modules/lab/audio.py:76
 msgid "скорость кодирования и сжатия видео должна быть одной из \"{}\" ..."
 msgstr "video encoding and compression rate must be one of \"{}\" ..."
 
-#: neweraai/modules/lab/audio.py:77
+#: neweraai/modules/lab/audio.py:78
 msgid "тип файла для распознавания должен быть одним из \"{}\" ..."
 msgstr "the file type for recognition must be one of \"{}\" ..."
 

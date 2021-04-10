@@ -39,7 +39,7 @@ msgstr ""
 msgid "расширение файла должно быть одно из \"{}\" ..."
 msgstr ""
 
-#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:65
+#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:66
 #: neweraai/modules/lab/download.py:47
 msgid " (ошибка {})"
 msgstr ""
@@ -144,39 +144,43 @@ msgstr ""
 msgid "Загрузка VAD модели \"{}\" из репозитория {} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:66
+#: neweraai/modules/lab/audio.py:64
+msgid "Создание директорий под фильтр распознавания речи ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:67
 msgid "не удалось скачать модель{} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:68
+#: neweraai/modules/lab/audio.py:69
 msgid "Анализ аудиодорожек {}..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:69
-msgid "и распознавание речи "
-msgstr ""
-
 #: neweraai/modules/lab/audio.py:70
-msgid "Всего видеофайлов на которых VAD не отработал - {} ..."
+msgid " и распознавание речи "
 msgstr ""
 
 #: neweraai/modules/lab/audio.py:71
-msgid "Всего видеофрагментов, которые не сохранились - {} ..."
+msgid "Всего видеофайлов на которых VAD не отработал - {} ..."
 msgstr ""
 
 #: neweraai/modules/lab/audio.py:72
+msgid "Всего видеофрагментов, которые не сохранились - {} ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:73
 msgid "Все аудиодорожки были проанализированы ... это хороший знак ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:74
+#: neweraai/modules/lab/audio.py:75
 msgid "тип кодирования видео должен быть одним из \"{}\" ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:75
+#: neweraai/modules/lab/audio.py:76
 msgid "скорость кодирования и сжатия видео должна быть одной из \"{}\" ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:77
+#: neweraai/modules/lab/audio.py:78
 msgid "тип файла для распознавания должен быть одним из \"{}\" ..."
 msgstr ""
 

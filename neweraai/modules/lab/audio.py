@@ -61,12 +61,13 @@ class Messages(Speech):
                                                           'знак ...')
 
         self._download_model_from_repo: str = self._('Загрузка VAD модели "{}" из репозитория {} ...')
+        self._create_folder_filter_sr: str = self._('Создание директорий под фильтр распознавания речи ...')
 
         self._url_error_code: str = self._(' (ошибка {})')
         self._url_error: str = self._oh + self._('не удалось скачать модель{} ...')
 
         self._audio_track_analysis: str = self._('Анализ аудиодорожек {}...')
-        self._audio_track_sr: str = self._('и распознавание речи ')
+        self._audio_track_sr: str = self._(' и распознавание речи ')
         self._vad_err: str = self._('Всего видеофайлов на которых VAD не отработал - {} ...')
         self._save_sr_err: str = self._('Всего видеофрагментов, которые не сохранились - {} ...')
         self._vad_true: str = self._('Все аудиодорожки были проанализированы ... это хороший знак ...')
@@ -462,15 +463,6 @@ class Audio(Messages):
                         self.__part_audio_path.append(os.path.join(self.__splitted_audio,
                                                Path(self.__curr_path).stem + '_' + str(cnt) + ch + self.ext_audio))
 
-                # ######################################################################################################
-                # RUSAVIC
-                # ######################################################################################################
-                if self.__rusavic(
-                        os.path.join(Path(self.__curr_path).parent, Path(self.__curr_path).stem),
-                        start_time, end_time, self.__part_video_path, self.__part_audio_path
-                ) is True: continue
-                # ######################################################################################################
-
                 # Удаление видеофайла
                 if os.path.isfile(self.__part_video_path) is True: os.remove(self.__part_video_path)
                 # Удаление аудиофайлов
@@ -528,19 +520,19 @@ class Audio(Messages):
                         # Варианты кодирования
                         if self.__type_encode == self._types_encode[0]:
                             # https://trac.ffmpeg.org/wiki/Encode/MPEG-4
-                            ff_video = 'ffmpeg -ss {} -i "{}" -{} 0 -to {} "{}"'.format(
+                            ff_video = 'ffmpeg -loglevel quiet -ss {} -i "{}" -{} 0 -to {} "{}"'.format(
                                 start_time, self.__curr_path, self.__type_encode, diff_time, self.__part_video_path)
                         elif self.__type_encode == self._types_encode[1]:
                             # https://trac.ffmpeg.org/wiki/Encode/H.264
-                            ff_video = 'ffmpeg -ss {} -i "{}" -{} {} -preset {} -to {} "{}"'.format(
+                            ff_video = 'ffmpeg -loglevel quiet -ss {} -i "{}" -{} {} -preset {} -to {} "{}"'.format(
                                 start_time, self.__curr_path, self.__type_encode, self.__crf_value,
                                 self.__presets_crf_encode, diff_time, self.__part_video_path)
 
                         if channels_audio == 1:  # Моно канал
-                            ff_audio = 'ffmpeg -i "{}" -ss {} -to {} -c copy "{}"'.format(
+                            ff_audio = 'ffmpeg -loglevel quiet -i "{}" -ss {} -to {} -c copy "{}"'.format(
                                 self.__audio_path, start_time, end_time, self.__part_audio_path[0])
                         elif channels_audio == 2:  # Стерео канал
-                            ff_audio = ('ffmpeg -i "{}" -map_channel 0.0.0 -ss {} -to {} '
+                            ff_audio = ('ffmpeg -loglevel quiet -i "{}" -map_channel 0.0.0 -ss {} -to {} '
                                         '"{}" -map_channel 0.0.1 -ss {} -to {} "{}"').format(
                                 self.__audio_path, start_time, end_time, self.__part_audio_path[0],
                                 start_time, end_time, self.__part_audio_path[1])
@@ -566,34 +558,6 @@ class Audio(Messages):
                 )
             else:
                 self.__unprocessed_files.append(self.__curr_path)
-
-    @staticmethod
-    def __rusavic(path, start_time, end_time, part_video_path, part_audio_path):
-        # Фильтр игнорирования речи
-        import json
-
-        try:
-            with open(path + '.json') as f: data = json.load(f)
-        except Exception: return False
-        else:
-            l = []
-
-            for i in data[list(data.keys())[0]]:
-                res = (i[1] - i[0]) / 2
-                l.append(round(i[0] + res, 3))
-
-            for curr_val in l:
-                if start_time.total_seconds() < curr_val < end_time.total_seconds():
-                    try:
-                        # Удаление видеофайла
-                        if os.path.isfile(part_video_path) is True: os.remove(part_video_path)
-                        # Удаление аудиофайлов
-                        for file in part_audio_path:
-                            if os.path.isfile(file) is True: os.remove(file)
-                    except Exception: return False
-                    else: return True
-
-            return False
 
     # ------------------------------------------------------------------------------------------------------------------
     # Внешние методы
@@ -722,7 +686,8 @@ class Audio(Messages):
             num_steps: int = 8, batch_size: int = 200, num_samples_per_window: int = 4000,
             min_speech_samples: int = 10000, min_silence_samples: int = 500, sr: bool = True,
             new_name_sr: str or None = None, sr_input_type: str = 'audio', logs: bool = True,
-            clear_dir: bool = False, runtime: bool = True, out: bool = True, run: bool = True):
+            create_folder_filter_sr: bool = False, clear_dir: bool = False,
+            runtime: bool = True, out: bool = True, run: bool = True):
         """
         VAD (Voice Activity Detector)
 
@@ -742,7 +707,8 @@ class Audio(Messages):
             new_name_sr - Имя директории для разархивирования модели распознавания речи
             sr_input_type - Тип файла для распознавания речи
             logs - При необходимости формировать LOG файл
-            clear_dir - Очиска директории с разделенными видеофрагментами
+            create_folder_filter_sr - Создание директорий под фильтр распознавания речи
+            clear_dir - Очистка директории с разделенными видеофрагментами
             runtime - Подсчет времени выполнения
             out - Отображение
             run - Блокировка выполнения
@@ -767,7 +733,8 @@ class Audio(Messages):
                     or type(min_speech_samples) is not int or min_speech_samples < 0
                     or type(min_silence_samples) is not int or min_silence_samples < 0 or type(sr) is not bool
                     or ((type(new_name_sr) is not str or not new_name_sr) and new_name_sr is not None)
-                    or type(logs) is not bool or type(clear_dir) is not bool or type(runtime) is not bool
+                    or type(logs) is not bool or type(create_folder_filter_sr) is not bool
+                    or type(clear_dir) is not bool or type(runtime) is not bool
                     or type(out) is not bool or type(run) is not bool):
                 raise TypeError
         except TypeError: self._inv_args(__class__.__name__, self.vad.__name__, out = out)
@@ -851,7 +818,7 @@ class Audio(Messages):
                             splitted = self._create_folder(splitted)
                             if not splitted: raise IsADirectoryError  # Директория не создана
 
-                            # Очиска директории с разделенными видеофрагментами
+                            # Очистка директории с разделенными видеофрагментами
                             if clear_dir is True: self._clear_folder(splitted)
                             if os.path.isdir(original) is False: raise IsADirectoryError
                         except IsADirectoryError:
@@ -894,6 +861,43 @@ class Audio(Messages):
                                     # Загрузка и активация модели Vosk для распознавания речи
                                     if self._vosk(new_name = new_name_sr, force_reload = force_reload, runtime = False,
                                                   out = out, run = True) is False: return None
+
+                                    # Создание директорий под фильтр распознавания речи
+                                    if create_folder_filter_sr is True:
+                                        show_info = False  # Информационное сообщение не показано
+
+                                        # Проход по всему фильтру
+                                        for item in self.filter_sr:
+                                            # Текущее значение не пустая строка
+                                            if type(item) is str and item:
+                                                try: item = item.lower().replace(' ', '_')
+                                                except Exception: continue
+                                            # Текущее значение - список не вложенный
+                                            if type(item) is list and self._nest_level(item) < 2:
+                                                try: item = item[0].lower().replace(' ', '_')
+                                                except Exception: continue
+
+                                            # Информационное сообщение не показано
+                                            if show_info is False:
+                                                clear_output(True)
+                                                # Информационное сообщение
+                                                self._info(self._create_folder_filter_sr, last = False, out = False)
+                                                # Отображение истории вывода сообщений в ячейке Jupyter
+                                                if out: self.show_notebook_history_output()
+
+                                                show_info = True  # Информационное сообщение показано
+
+                                            # Директория для сортировки распознанной речи
+                                            dir_curr_sr_video = os.path.join(self.__splitted_video, item)
+                                            dir_curr_sr_audio = os.path.join(self.__splitted_audio, item)
+
+                                            try:
+                                                # Проход по всем директориям для сортировки распознанной речи
+                                                for dir_curr_sr in [dir_curr_sr_video, dir_curr_sr_audio]:
+                                                    # Создание директории
+                                                    if not os.path.exists(dir_curr_sr): os.makedirs(dir_curr_sr)
+                                            except Exception:
+                                                self._other_error(self._unknown_err, out = out); return None
 
                                 self.__unprocessed_files = []  # Видеофайлы на которых VAD не отработал
                                 self.__not_saved_files = []  # Видеофайлы которые не сохранились при обработке VAD

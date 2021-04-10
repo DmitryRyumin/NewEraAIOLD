@@ -78,12 +78,17 @@ class Speech(Messages):
         # Модели для распознавания речи
         self._models_for_sr: Dict = {
             'vosk': {
-                'languages': ['ru'],  # Поддерживаемые языки
+                'languages': ['ru', 'en'],  # Поддерживаемые языки
                 'dicts': ['small', 'big'],  # Размеры словарей
                 # Русский язык
                 'ru' : {
                     'big': 'vosk-model-ru-0.10.zip',
                     'small': 'vosk-model-small-ru-0.4.zip'
+                },
+                # Английский язык
+                'en': {
+                    'big': 'vosk-model-en-us-aspire-0.2.zip',
+                    'small': 'vosk-model-small-en-us-0.15.zip'
                 }
             },
         }
