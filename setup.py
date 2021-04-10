@@ -10,14 +10,16 @@ if sys.version_info[:2] < MIN_PYTHON_VERSION:
 import neweraai
 
 REQUIRED_PACKAGES = [
-    'torch >= 1.8.0',
-    'torchaudio >= 0.8.0',
+    'torch >= 1.8.1',
+    'torchaudio >= 0.8.1',
     'SoundFile >= 0.10.3.post1',
-    'numpy >= 1.20.1',
+    'numpy >= 1.20.2',
     'pandas >= 1.2.3',
-    'matplotlib >= 3.3.4',
-    'jupyterlab >= 3.0.12',
-    'pymediainfo >= 5.0.3'
+    'matplotlib >= 3.4.1',
+    'jupyterlab >= 3.0.13',
+    'pymediainfo >= 5.0.3',
+    'requests >= 2.25.1',
+    'vosk >= 0.3.21'
 ]
 
 CLASSIFIERS = """\

@@ -1,12 +1,12 @@
 # base Russian translation.
-# Copyright (C) 2020 Dmitry Ryumin
+# Copyright (C) 2021 Dmitry Ryumin
 # Dmitry Ryumin <dl_03.03.1991@mail.ru>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"POT-Creation-Date: 2021-03-23 23:23+0300\n"
-"PO-Revision-Date: 2021-03-23 23:23+0300\n"
+"POT-Creation-Date: 2021-04-10 23:23+0300\n"
+"PO-Revision-Date: 2021-04-10 23:23+0300\n"
 "Last-Translator: Dmitry Ryumin <dl_03.03.1991@mail.ru>\n"
 "Language-Team: Russian <dl_03.03.1991@mail.ru>\n"
 "MIME-Version: 1.0\n"
@@ -15,32 +15,49 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: neweraai/modules/core/core.py:52
+#: neweraai/modules/core/core.py:58
 msgid "Файл"
 msgstr ""
 
-#: neweraai/modules/core/core.py:53
+#: neweraai/modules/core/core.py:59
 msgid "Линия"
 msgstr ""
 
-#: neweraai/modules/core/core.py:54
+#: neweraai/modules/core/core.py:60
 msgid "Метод"
 msgstr ""
 
-#: neweraai/modules/core/core.py:55
+#: neweraai/modules/core/core.py:61
 msgid "Тип ошибки"
 msgstr ""
 
-#: neweraai/modules/core/core.py:57
+#: neweraai/modules/core/core.py:63
 msgid "сек."
 msgstr ""
 
-#: neweraai/modules/core/core.py:59 neweraai/modules/lab/audio.py:66
-msgid " (ошибка {}{}{})"
+#: neweraai/modules/core/core.py:65
+msgid "расширение файла должно быть одно из \"{}\" ..."
 msgstr ""
 
-#: neweraai/modules/core/core.py:60
-msgid "Ой! Что-то пошло не так ... не удалось сохранить LOG файл{} ..."
+#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:65
+#: neweraai/modules/lab/download.py:47
+msgid " (ошибка {})"
+msgstr ""
+
+#: neweraai/modules/core/core.py:67
+msgid "не удалось сохранить LOG файл{} ..."
+msgstr ""
+
+#: neweraai/modules/core/core.py:68
+msgid "файл \"{}\" не найден ..."
+msgstr ""
+
+#: neweraai/modules/core/core.py:69
+msgid "META информация не найдена ..."
+msgstr ""
+
+#: neweraai/modules/core/core.py:71
+msgid "директория \"{}\" не найдена ..."
 msgstr ""
 
 #: neweraai/modules/core/messages.py:37
@@ -76,61 +93,149 @@ msgid "Неверные типы или значения аргументов в
 msgstr ""
 
 #: neweraai/modules/core/messages.py:47
-msgid "Ой! Что-то пошло не так ... смотрите настройки ядра и цепочку выполнения действий ..."
+msgid "Ой! Что-то пошло не так ... "
 msgstr ""
 
-#: neweraai/modules/core/messages.py:49
-msgid "Прям беда! Не обработанную ошибку необходимо проанализировать и выявить причину ..."
+#: neweraai/modules/core/messages.py:48
+msgid "Прям беда! "
 msgstr ""
 
-#: neweraai/modules/core/messages.py:52
+#: neweraai/modules/core/messages.py:50
+msgid "смотрите настройки ядра и цепочку выполнения действий ..."
+msgstr ""
+
+#: neweraai/modules/core/messages.py:51
+msgid "Не обработанную ошибку необходимо проанализировать и выявить причину ..."
+msgstr ""
+
+#: neweraai/modules/core/messages.py:54
 msgid "Лог файл успешно сохранен ..."
 msgstr ""
 
-#: neweraai/modules/core/settings.py:55
-msgid "Время выполнения"
-msgstr ""
-
-#: neweraai/modules/lab/audio.py:52
-msgid "В указанной директории необходимые файлы не найдены ..."
-msgstr ""
-
-#: neweraai/modules/lab/audio.py:53
-msgid "Извлечение аудиодорожек из видеофайлов ..."
-msgstr ""
-
-#: neweraai/modules/lab/audio.py:54
+#: neweraai/modules/core/messages.py:56
 msgid "из"
 msgstr ""
 
+#: neweraai/modules/core/messages.py:58
+msgid "Выполнение заблокировано пользователем ..."
+msgstr ""
+
+#: neweraai/modules/core/settings.py:57
+msgid "Время выполнения"
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:53
+msgid "В указанной директории необходимые файлы не найдены ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:54
+msgid "Извлечение аудиодорожек из видеофайлов ..."
+msgstr ""
+
 #: neweraai/modules/lab/audio.py:58
-msgid "Директория \"{}\" не найдена ..."
+msgid "Всего видеофайлов из которых аудиодорожка не была извлечена - {} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:59
-msgid "Всего видеофайлов из которых аудиодорожка не была извлечена - {}{}{} ..."
-msgstr ""
-
-#: neweraai/modules/lab/audio.py:61
+#: neweraai/modules/lab/audio.py:60
 msgid "Все аудиодорожки были успешно извлечены ... это хороший знак ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:64
-msgid "Загрузка модели \"{}{}{}\" из репозитория {} ..."
+#: neweraai/modules/lab/audio.py:63
+msgid "Загрузка VAD модели \"{}\" из репозитория {} ..."
 msgstr ""
 
-#: neweraai/modules/lab/audio.py:67
-msgid "Ой! Что-то пошло не так ... не удалось скачать модель{} ..."
+#: neweraai/modules/lab/audio.py:66
+msgid "не удалось скачать модель{} ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:68
+msgid "Анализ аудиодорожек {}..."
 msgstr ""
 
 #: neweraai/modules/lab/audio.py:69
-msgid "Анализ аудиодорожек ..."
+msgid "и распознавание речи "
 msgstr ""
 
 #: neweraai/modules/lab/audio.py:70
-msgid "Всего видеофайлов на которых VAD не отработал - {}{}{} ..."
+msgid "Всего видеофайлов на которых VAD не отработал - {} ..."
 msgstr ""
 
 #: neweraai/modules/lab/audio.py:71
+msgid "Всего видеофрагментов, которые не сохранились - {} ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:72
 msgid "Все аудиодорожки были проанализированы ... это хороший знак ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:74
+msgid "тип кодирования видео должен быть одним из \"{}\" ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:75
+msgid "скорость кодирования и сжатия видео должна быть одной из \"{}\" ..."
+msgstr ""
+
+#: neweraai/modules/lab/audio.py:77
+msgid "тип файла для распознавания должен быть одним из \"{}\" ..."
+msgstr ""
+
+#: neweraai/modules/lab/download.py:44
+msgid "не удалось обработать указанный URL ..."
+msgstr ""
+
+#: neweraai/modules/lab/download.py:45
+msgid "URL указан некорректно ..."
+msgstr ""
+
+#: neweraai/modules/lab/download.py:46
+msgid "Загрузка файла \"{}\""
+msgstr ""
+
+#: neweraai/modules/lab/download.py:48
+msgid "не удалось скачать файл \"{}\"{} ..."
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:51
+msgid "язык для распознавания должен быть одним из \"{}\" ..."
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:52
+msgid "словарь для распознавания должен быть одним из \"{}\" ..."
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:53
+msgid "модель распознавания речи не активирована ..."
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:54
+msgid "Количество аудиоканалов должно быть не больше {} ..."
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:55
+msgid "Идет процесс распознавания речи ..."
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:56
+msgid "Речь не найдена ..."
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:57
+msgid " и {}"
+msgstr ""
+
+#: neweraai/modules/lab/speech.py:58
+msgid "Всего найдено {}{} текстовых последовательностей ..."
+msgstr ""
+
+#: neweraai/modules/lab/unzip.py:43
+msgid "Разархивирование архива \"{}\""
+msgstr ""
+
+#: neweraai/modules/lab/unzip.py:45
+msgid "не удалось разархивировать архив \"{}\" ..."
+msgstr ""
+
+#: neweraai/modules/lab/unzip.py:46
+msgid "не удалось переименовать директорию из \"{}\" в \"{}\" ..."
 msgstr ""

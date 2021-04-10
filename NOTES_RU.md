@@ -1,5 +1,28 @@
 # NewEraAI - новая эра искусственного интеллекта 
 
+## 10 апреля 2021 года
+
+> `1.0.0-rc4`
+
+<h4><span style="color:#008000;">Что нового</span></h4>
+
+- Добавлена возможность блокировки выполнения всех внешних методов (аргумент `run`)
+- Новый метод `_neai.show_notebook_history_output()` для отображения последнего результата из истории вывода в ячейках Jupyter
+- Новый метод `_neai.media_info(...)` для получения и отображения meta данных из медиафайлов
+- Добавлены собственные [исключения](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/exceptions.py) для определенных ошибок, которые могут возникнуть в процессе работы
+- Новый класс [Download](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/download.py) для загрузки файлов из URL
+- Новый класс [Unzip](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/unzip.py) для разархивирования архивов
+
+<h4><span style="color:#247CB4;">Изменения</span></h4>
+
+- Класс распознавания речи [Speech](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/speech.py) может функционировать отдельно от класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py)
+- Улучшена функциональность класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) за счет анализа и обработки аудиоинформации без ее предварительного сохранения на локальном хранилище
+- Обновлены зависимости
+
+<h4><span style="color:#DB534F;">Исправления</span></h4>
+
+- Исправлены опечатки
+
 ## 24 марта 2021 года
 
 > `1.0.0-rc3`
@@ -7,7 +30,6 @@
 <h4><span style="color:#DB534F;">Исправления</span></h4>
 
 - Исправлена ошибка в методе `vad` класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py), которая вызывала исключение `ZeroDivisionError` при некорректном вводе значения аргумента `trig_sum`
-
 
 > `1.0.0-rc2`
 
