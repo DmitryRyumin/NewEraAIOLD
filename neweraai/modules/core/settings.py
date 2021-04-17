@@ -85,6 +85,7 @@ class Settings(Messages):
         self.path_to_dataset: str = ''  # Директория набора данных
         self.keys_dataset: List[str] = ['Path', 'Class', 'ID_class']  # Названия ключей для DataFrame набора данных
         self.ext: List[str] = [] # Расширения искомых файлов
+        self.ignore_dirs: List[str] = []  # Директории не входящие в выборку
         self.filter_dirs: List[str] = [] # Директории входящие в выборку
 
         self.keys_stats: List[str] = ['Class_name', 'Number_of_images']  # Названия ключей для DataFrame со статистикой
@@ -284,6 +285,16 @@ class Settings(Messages):
     # Установка расширения искомых файлов
     @ext.setter
     def ext(self, ext): self._ext = ext
+
+    # Получение списка с директориями не входящими в выборку
+    @property
+    def ignore_dirs(self): return self._ignore_dirs
+
+    # Установка списка с директориями не входящими в выборку
+    @ignore_dirs.setter
+    def ignore_dirs(self, l):
+        if type(l) is not list: self._ignore_dirs = []
+        else: self._ignore_dirs = l
 
     # Получение списка с директориями входящими в выборку
     @property

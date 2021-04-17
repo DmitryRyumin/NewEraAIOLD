@@ -140,7 +140,8 @@ class Statistics(Messages):
                 for f in os.scandir(curr_path):
                     if f.is_dir() and not f.name.startswith('.'):
                         ignore = False  # По умолчанию не игнорировать директорию
-                        for curr_dir in [self._dir_va[1], self.cart_name]:
+                        for curr_dir in self.ignore_dirs:
+                            if type(curr_dir) is not str: continue
                             if re.search('^' + curr_dir, f.name) is not None: ignore = True  # Игнорировать директорию
 
                         if ignore is False: new_path.append(f.path)
