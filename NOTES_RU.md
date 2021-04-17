@@ -2,6 +2,12 @@
 
 ## 17 апреля 2021 года
 
+> `1.0.1`
+
+<h4><span style="color:#008000;">Что нового</span></h4>
+
+- Добавлено отображение библиотеки `seaborn` в методе `libs_vers` класса [Core](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/core.py)
+
 > `1.0.0`
 
 <h4><span style="color:#008000;">Что нового</span></h4>

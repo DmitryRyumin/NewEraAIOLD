@@ -2,6 +2,12 @@
 
 ## April 17, 2021
 
+> `1.0.1`
+
+<h4><span style="color:#008000;">What's new</span></h4>
+
+- Added display of the `seaborn` library in the `libs_vers` method of the class [Core](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/core.py)
+
 > `1.0.0`
 
 <h4><span style="color:#008000;">What's new</span></h4>

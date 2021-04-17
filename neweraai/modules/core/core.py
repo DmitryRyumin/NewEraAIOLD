@@ -28,7 +28,8 @@ import soundfile as sf     # Работа с аудио
 import urllib.error        # Обработка ошибок URL
 import requests            # Отправка HTTP запросов
 import shutil              # Набор функций высокого уровня для обработки файлов, групп файлов, и папок
-import re                  #  Регулярные выражения
+import re                  # Регулярные выражения
+import seaborn as sns      # Визуализация графиков (надстройка над matplotlib)
 
 from datetime import datetime  # Работа со временем
 from pathlib import Path       # Работа с путями в файловой системе
@@ -616,10 +617,12 @@ class Core(Messages):
 
             pkgs = {
                 'Package': [
-                    'PyTorch', 'Torchaudio', 'SoundFile', 'NumPy', 'Pandas', 'Matplotlib', 'JupyterLab',
+                    'PyTorch', 'Torchaudio', 'SoundFile', 'NumPy', 'Pandas', 'Matplotlib', 'Seaborn', 'JupyterLab',
                     'PyMediaInfo', 'Requests', 'Vosk'
                 ],
-                'Version': [i.__version__ for i in [torch, torchaudio, sf, np, pd, mpl, jlab, pymediainfo, requests]]
+                'Version': [i.__version__ for i in [
+                    torch, torchaudio, sf, np, pd, mpl, sns, jlab, pymediainfo, requests
+                ]]
             }
             pkgs['Version'].append(pkg_resources.get_distribution('vosk').version)
 
