@@ -19,7 +19,7 @@ REQUIRED_PACKAGES = [
     'jupyterlab >= 3.0.14',
     'pymediainfo >= 5.0.4',
     'requests >= 2.25.1',
-    'vosk >= 0.3.22',
+    'vosk >= 0.3.21',
     'seaborn >= 0.11.1'
 ]
 

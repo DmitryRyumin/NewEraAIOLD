@@ -2,7 +2,7 @@
 
 ## April 17, 2021
 
-> `1.0.0-rc6`
+> `1.0.0`
 
 <h4><span style="color:#008000;">What's new</span></h4>
 
