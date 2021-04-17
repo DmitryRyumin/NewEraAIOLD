@@ -88,6 +88,8 @@ class Statistics(Messages):
         self._title_label_for_df_1 = False  # Заголовок осей
         self._curr_n_splits: int = 1  # Какая стратифицированная выборка будет выбрана для процесса обучения и валидации
 
+        self._dir_va: List[str] = ['Video', 'Audio']  # Название каталогов для видео и аудио
+
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
     # ------------------------------------------------------------------------------------------------------------------
@@ -138,7 +140,7 @@ class Statistics(Messages):
                 for f in os.scandir(curr_path):
                     if f.is_dir() and not f.name.startswith('.'):
                         ignore = False  # По умолчанию не игнорировать директорию
-                        for curr_dir in self.ignore_dirs:
+                        for curr_dir in [self._dir_va[1], self.cart_name]:
                             if re.search('^' + curr_dir, f.name) is not None: ignore = True  # Игнорировать директорию
 
                         if ignore is False: new_path.append(f.path)
@@ -461,8 +463,13 @@ class Statistics(Messages):
             else:
                 all_empty = True  # По умолчанию все каталоги пустые
 
+                # Установка списка с директориями входящими в выборку
+                self.filter_dirs = [v.lower().replace(' ', '_').capitalize().strip() for v in
+                    self.filter_dirs if type(v) is str]
+
                 # Проход по всем именам классов
                 for curr_path in path_to_classes:
+                    if len(self.filter_dirs) > 0 and (Path(curr_path).name in self.filter_dirs) is False: continue
 
                     empty = True  # По умолчанию каталог пустой
 

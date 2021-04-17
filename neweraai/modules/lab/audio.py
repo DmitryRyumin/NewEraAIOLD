@@ -106,8 +106,6 @@ class Audio(Messages):
             'ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow'
         ]
 
-        self._dir_va: List[str] = ['Video', 'Audio']  # Название каталогов для видео и аудио
-
         # ----------------------- Только для внутреннего использования внутри класса
 
         self.__audio_path: str = ''  # Путь до аудиофайла
@@ -348,7 +346,7 @@ class Audio(Messages):
             if type(item) is str and item:
                 try:
                     # Искомое значение найдено
-                    if item.lower().replace(' ', '_') == val.lower(): return True, item
+                    if item.lower().replace(' ', '_').strip() == val.lower(): return True, item
                 except Exception: continue
             # Текущее значение - список не вложенный
             if type(item) is list and Audio._nest_level(item) < 2:
@@ -367,7 +365,7 @@ class Audio(Messages):
         Возвращает: True если текстовое представление речи найдено в словаре, в обратном случае False
         """
 
-        curr_val = results_recognized.replace(' ', '_').lower().capitalize()  # Директория для сохранения файла
+        curr_val = results_recognized.replace(' ', '_').lower().capitalize().strip()  # Директория для сохранения файла
 
         # Рекурсивный поиск значения в списке
         filter_sr = self._recursive_search_value_in_filter_sr(self._filter_sr, curr_val)
@@ -924,11 +922,11 @@ class Audio(Messages):
                                     for item in self.filter_sr:
                                         # Текущее значение не пустая строка
                                         if type(item) is str and item:
-                                            try: item = item.lower().replace(' ', '_').capitalize()
+                                            try: item = item.lower().replace(' ', '_').capitalize().strip()
                                             except Exception: continue
                                         # Текущее значение - список не вложенный
                                         if type(item) is list and self._nest_level(item) < 2:
-                                            try: item = item[0].lower().replace(' ', '_').capitalize()
+                                            try: item = item[0].lower().replace(' ', '_').capitalize().strip()
                                             except Exception: continue
 
                                         # Информационное сообщение не показано

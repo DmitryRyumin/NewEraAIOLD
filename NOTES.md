@@ -2,6 +2,12 @@
 
 ## April 17, 2021
 
+> `1.0.2`
+
+<h4><span style="color:#008000;">What's new</span></h4>
+
+- Added the ability to filter directories that will be included in the balance selection (kernel setting: `filter_dirs`)
+
 > `1.0.1`
 
 <h4><span style="color:#008000;">What's new</span></h4>
