@@ -1,5 +1,24 @@
 # NewEraAI - новая эра искусственного интеллекта 
 
+## 17 апреля 2021 года
+
+> `1.0.0-rc6`
+
+<h4><span style="color:#008000;">Что нового</span></h4>
+
+- Метод `media_info` [Core](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/core.py) отображает дополнительные meta данные (`minimum_frame_rate`, `maximum_frame_rate`) из медиафайлов
+- Расширены собственные [исключения](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/exceptions.py) для определенных ошибок, которые могут возникнуть в процессе работы
+- Добавлена возможность обработки видео с разных ракурсов
+- Новый класс [Statistics](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/statistics.py) для отображения статистических данных
+
+<h4><span style="color:#247CB4;">Изменения</span></h4>
+
+- Обновлены зависимости
+
+<h4><span style="color:#DB534F;">Исправления</span></h4>
+
+- Исправлены опечатки
+
 ## 10 апреля 2021 года
 
 > `1.0.0-rc5`

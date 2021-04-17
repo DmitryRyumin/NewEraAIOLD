@@ -104,8 +104,8 @@ class Core(Messages):
 
         # Тип файла с META информацией
         self._type_meta_info: Dict[str, List] = {
-            'Video' : ['format', 'other_width', 'other_height', 'other_display_aspect_ratio', 'frame_rate',
-                       'other_bit_rate', 'encoded_date'],
+            'Video' : ['format', 'other_width', 'other_height', 'other_display_aspect_ratio',
+                       'minimum_frame_rate', 'frame_rate', 'maximum_frame_rate', 'other_bit_rate', 'encoded_date'],
             'Audio' : ['format', 'other_bit_rate', 'other_channel_s', 'other_sampling_rate']
         }
 
@@ -668,7 +668,7 @@ class Core(Messages):
             if runtime: self._r_start()
 
             try:
-                # Meta даннные
+                # Meta данные
                 metadata = pymediainfo.MediaInfo.parse(os.path.normpath(path_to_file)).to_data()
             except FileNotFoundError: self._other_error(self._file_not_found.format(
                     self._info_wrapper(Path(path_to_file).name)))

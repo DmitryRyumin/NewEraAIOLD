@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"POT-Creation-Date: 2021-04-10 23:23+0300\n"
-"PO-Revision-Date: 2021-04-10 23:23+0300\n"
+"POT-Creation-Date: 2021-04-17 23:23+0300\n"
+"PO-Revision-Date: 2021-04-17 23:23+0300\n"
 "Last-Translator: Dmitry Ryumin <dl_03.03.1991@mail.ru>\n"
 "Language-Team: English <dl_03.03.1991@mail.ru>\n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgstr "sec."
 msgid "расширение файла должно быть одно из \"{}\" ..."
 msgstr "the file extension must be one of \"{}\" ..."
 
-#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:66
+#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:65
 #: neweraai/modules/lab/download.py:47
 msgid " (ошибка {})"
 msgstr " (error {})"
@@ -120,67 +120,63 @@ msgstr "from"
 msgid "Выполнение заблокировано пользователем ..."
 msgstr "Execution blocked by user ..."
 
-#: neweraai/modules/core/settings.py:55
+#: neweraai/modules/core/settings.py:57
 msgid "Время выполнения"
 msgstr "Lead time"
 
 #: neweraai/modules/lab/audio.py:53
-msgid "В указанной директории необходимые файлы не найдены ..."
-msgstr "The required files were not found in the specified directory ..."
-
-#: neweraai/modules/lab/audio.py:54
 msgid "Извлечение аудиодорожек из видеофайлов ..."
 msgstr "Extracting audio tracks from video files ..."
 
-#: neweraai/modules/lab/audio.py:58
+#: neweraai/modules/lab/audio.py:57
 msgid "Всего видеофайлов из которых аудиодорожка не была извлечена - {} ..."
 msgstr "Total video files from which the audio track has not been extracted - {} ..."
 
-#: neweraai/modules/lab/audio.py:60
+#: neweraai/modules/lab/audio.py:59
 msgid "Все аудиодорожки были успешно извлечены ... это хороший знак ..."
 msgstr "All audio tracks have been extracted successfully ... this is a good sign ..."
 
-#: neweraai/modules/lab/audio.py:63
+#: neweraai/modules/lab/audio.py:62
 msgid "Загрузка VAD модели \"{}\" из репозитория {} ..."
 msgstr "Downloading VAD model \"{}\" from repository {} ..."
 
-#: neweraai/modules/lab/audio.py:64
+#: neweraai/modules/lab/audio.py:63
 msgid "Создание директорий под фильтр распознавания речи ..."
 msgstr "Creating directories for speech recognition filter  ..."
 
-#: neweraai/modules/lab/audio.py:67
+#: neweraai/modules/lab/audio.py:66
 msgid "не удалось скачать модель{} ..."
 msgstr "failed to download model{} ..."
 
-#: neweraai/modules/lab/audio.py:69
+#: neweraai/modules/lab/audio.py:68
 msgid "Анализ аудиодорожек {}..."
 msgstr "Analyzing audio tracks{} ..."
 
-#: neweraai/modules/lab/audio.py:70
+#: neweraai/modules/lab/audio.py:69
 msgid " и распознавание речи "
 msgstr " and speech recognition "
 
-#: neweraai/modules/lab/audio.py:71
+#: neweraai/modules/lab/audio.py:70
 msgid "Всего видеофайлов на которых VAD не отработал - {} ..."
 msgstr "Total video files on which VAD did not work - {} ..."
 
-#: neweraai/modules/lab/audio.py:72
+#: neweraai/modules/lab/audio.py:71
 msgid "Всего видеофрагментов, которые не сохранились - {} ..."
 msgstr "Total video fragments that were not saved - {} ..."
 
-#: neweraai/modules/lab/audio.py:73
+#: neweraai/modules/lab/audio.py:72
 msgid "Все аудиодорожки были проанализированы ... это хороший знак ..."
 msgstr "All audio tracks have been analyzed ... this is a good sign ..."
 
-#: neweraai/modules/lab/audio.py:75
+#: neweraai/modules/lab/audio.py:74
 msgid "тип кодирования видео должен быть одним из \"{}\" ..."
 msgstr "video encoding type must be one of \"{}\" ..."
 
-#: neweraai/modules/lab/audio.py:76
+#: neweraai/modules/lab/audio.py:75
 msgid "скорость кодирования и сжатия видео должна быть одной из \"{}\" ..."
 msgstr "video encoding and compression rate must be one of \"{}\" ..."
 
-#: neweraai/modules/lab/audio.py:78
+#: neweraai/modules/lab/audio.py:77
 msgid "тип файла для распознавания должен быть одним из \"{}\" ..."
 msgstr "the file type for recognition must be one of \"{}\" ..."
 
@@ -231,6 +227,46 @@ msgstr " and {}"
 #: neweraai/modules/lab/speech.py:58
 msgid "Всего найдено {}{} текстовых последовательностей ..."
 msgstr "Total {}{} text sequences found ..."
+
+#: neweraai/modules/lab/statistics.py:59
+msgid "В указанной директории необходимые файлы не найдены ..."
+msgstr "The required files were not found in the specified directory ..."
+
+#: neweraai/modules/lab/statistics.py:60
+msgid "Всего найдено {} файлов с расширением {} ..."
+msgstr "Total found {} files with extension {} ..."
+
+#: neweraai/modules/lab/statistics.py:61
+msgid "DataFrame c данными пустой ..."
+msgstr "DataFrame with data empty ..."
+
+#: neweraai/modules/lab/statistics.py:62
+msgid "Всего найдено {} пустых классов ..."
+msgstr "Total {} empty classes found ..."
+
+#: neweraai/modules/lab/statistics.py:63
+msgid "В DataFrame пустых классов не найдено ... это хороший знак ..."
+msgstr "No empty classes found in DataFrame ... this is a good sign ..."
+
+#: neweraai/modules/lab/statistics.py:228
+msgid "Количество"
+msgstr "Number"
+
+#: neweraai/modules/lab/statistics.py:296
+msgid "Сбалансированность классов"
+msgstr "Balancing classes"
+
+#: neweraai/modules/lab/statistics.py:311
+msgid "ID класса"
+msgstr "Class ID"
+
+#: neweraai/modules/lab/statistics.py:319
+msgid "Количество экземпляров в каждом классе"
+msgstr "Number of instances in each class"
+
+#: neweraai/modules/lab/statistics.py:395
+msgid "Сбалансированность классов выборки"
+msgstr "Balancing sample classes"
 
 #: neweraai/modules/lab/unzip.py:43
 msgid "Разархивирование архива \"{}\""

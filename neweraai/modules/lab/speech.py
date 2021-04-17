@@ -209,7 +209,7 @@ class Speech(Messages):
         Возвращает: Словарь со вложенными списками из текстового представления речи, начала и конца речи
         """
 
-        # Количество каналов в аудиодорожки
+        # Количество каналов в аудиодорожке
         channels_audio = MediaInfo.parse(self.__path_to_file).to_data()['tracks'][1]['channel_s']
 
         if channels_audio > 2:
@@ -464,7 +464,7 @@ class Speech(Messages):
                         # Отображение истории вывода сообщений в ячейке Jupyter
                         if out: self.show_notebook_history_output()
 
-                    # Meta даннные
+                    # Meta данные
                     metadata = pymediainfo.MediaInfo.parse(self.__path_to_file).to_data()
 
                     type_info = [*self._type_meta_info]  # Тип файла

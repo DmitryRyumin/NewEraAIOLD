@@ -38,3 +38,4 @@ pip install --upgrade neweraai
 `pymediainfo` | `5.0.3` | ![PyPI](https://img.shields.io/pypi/v/pymediainfo) |
 `requests` | `2.25.1` | ![PyPI](https://img.shields.io/pypi/v/requests) |
 `vosk` | `0.3.21` | ![PyPI](https://img.shields.io/pypi/v/vosk) |
+`seaborn` | `0.11.1` | ![PyPI](https://img.shields.io/pypi/v/seaborn) |

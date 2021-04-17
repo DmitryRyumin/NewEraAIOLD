@@ -1,5 +1,24 @@
 # NewEraAI - New Era Artificial Intelligence
 
+## April 17, 2021
+
+> `1.0.0-rc6`
+
+<h4><span style="color:#008000;">What's new</span></h4>
+
+- Method `media_info` [Core](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/core.py) displays additional meta data (`minimum_frame_rate`, `maximum_frame_rate`) from media files
+- Expanded native [exceptions](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/core/exceptions.py) for certain errors that may occur during work
+- Added the ability to process videos from different angles
+- New class [Statistics](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/statistics.py) to display statistics
+
+<h4><span style="color:#247CB4;">Changes</span></h4>
+
+- Updated require packages
+
+<h4><span style="color:#DB534F;">Fixed bugs</span></h4>
+
+- Fixed typos
+
 ## April 10, 2021
 
 > `1.0.0-rc5`

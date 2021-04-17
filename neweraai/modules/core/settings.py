@@ -17,7 +17,7 @@ from dataclasses import dataclass  # Класс данных
 import os                 # Взаимодействие с файловой системой
 from pathlib import Path  # Работа с путями в файловой системе
 
-from typing import List  # Типы данных
+from typing import List, Tuple  # Типы данных
 
 # Персональные
 from neweraai.modules.core.messages import Messages  # Сообщения
@@ -81,6 +81,21 @@ class Settings(Messages):
         self.path_to_save: str = './models'  # Директория для сохранения
         self.cart_name: str = '__garbage__'  # Директория для корзины с не отсортированными файлами
         self._filter_sr: List[str] = []  # Фильтр распознавания речи
+
+        self.path_to_dataset: str = ''  # Директория набора данных
+        self.keys_dataset: List[str] = ['Path', 'Class', 'ID_class']  # Названия ключей для DataFrame набора данных
+        self.ext: List[str] = [] # Расширения искомых файлов
+        self.ignore_dirs : List[str] = [] # Директории не входящие в выборку
+
+        self.keys_stats: List[str] = ['Class_name', 'Number_of_images']  # Названия ключей для DataFrame со статистикой
+        self.figsize: Tuple[int, int] = (0, 0)  # Размер фигуры в дюймах
+        self.ymargin: float = 0  # Y отступ от ряда до рамки
+        self.bbox_to_anchor: Tuple[float, float] = (0, 0)  # Отступы от графика до легенды
+        self.pad: int = 24  # Y отступ в графиках от ряда до его значения
+
+        self.keys_folds: List[str] = ['train', 'val', 'test']  # Названия ключей для словаря стратифицированного набора
+        self.subplots_adjust: Tuple[float, float] = (0, 0)  # Отступы между фигурами
+        self.suptitle_y: float = 0  # Y отступ заголовка от вершины осей
 
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
@@ -170,7 +185,9 @@ class Settings(Messages):
 
     # Установка названий каталогов для обработки видео
     @sub_folder.setter
-    def sub_folder(self, names): self._sub_folder = names
+    def sub_folder(self, names):
+        if type(names) is not list: return []
+        else: self._sub_folder = names
 
     # Получение расширения искомых видеофайлов
     @property
@@ -243,3 +260,109 @@ class Settings(Messages):
     def filter_sr(self, l):
         if type(l) is not list: return self._filter_sr
         else: self._filter_sr = l
+
+    # Получение директории набора данных
+    @property
+    def path_to_dataset(self): return self._path_to_dataset
+
+    # Установка директории набора данных
+    @path_to_dataset.setter
+    def path_to_dataset(self, path): self._path_to_dataset = os.path.normpath(path)
+
+    # Получение названий ключей набора данных
+    @property
+    def keys_dataset(self): return self._keys_dataset
+
+    # Установка названий ключей набора данных
+    @keys_dataset.setter
+    def keys_dataset(self, keys): self._keys_dataset = keys
+
+    # Получение расширения искомых файлов
+    @property
+    def ext(self): return self._ext
+
+    # Установка расширения искомых файлов
+    @ext.setter
+    def ext(self, ext): self._ext = ext
+
+    # Получение списка с директориями не входящими в выборку
+    @property
+    def ignore_dirs(self): return self._ignore_dirs
+
+    # Установка списка с директориями не входящими в выборку
+    @ignore_dirs.setter
+    def ignore_dirs(self, l):
+        if type(l) is not list: return self._ignore_dirs
+        else: self._ignore_dirs = l
+
+    # Получение названий ключей для статистики
+    @property
+    def keys_stats(self): return self._keys_stats
+
+    # Установка названий ключей для статистики
+    @keys_stats.setter
+    def keys_stats(self, keys_stats): self._keys_stats = keys_stats
+
+    # Получение размера фигуры в дюймах
+    @property
+    def figsize(self): return self._figsize
+
+    # Установка размера фигуры в дюймах
+    @figsize.setter
+    def figsize(self, figsize):
+        if type(figsize) is not tuple or len(figsize) != 2: return self._figsize
+        else: self._figsize = figsize
+
+    # Получение Y отступа от ряда до рамки
+    @property
+    def ymargin(self): return self._ymargin
+
+    # Установка Y отступа от ряда до рамки
+    @ymargin.setter
+    def ymargin(self, ymargin): self._ymargin = ymargin
+
+    # Получение отступов от графика до легенды
+    @property
+    def bbox_to_anchor(self): return self._bbox_to_anchor
+
+    # Установка отступов от графика до легенды
+    @bbox_to_anchor.setter
+    def bbox_to_anchor(self, bbox):
+        if type(bbox) is not tuple or len(bbox) != 2: return self._bbox_to_anchor
+        else: self._bbox_to_anchor = bbox
+
+    # Получение Y отступа в графиках от ряда до его значения
+    @property
+    def pad(self): return self._pad
+
+    # Установка Y отступа в графиках от ряда до его значения
+    @pad.setter
+    def pad(self, pad): self._pad = pad
+
+    # Получение названий ключей для словаря стратифицированного набора
+    @property
+    def keys_folds(self): return self._keys_folds
+
+    # Установка названий ключей для словаря стратифицированного набора
+    @keys_folds.setter
+    def keys_folds(self, keys_folds):
+        if type(keys_folds) is not list: return self._keys_folds
+        else: self._keys_folds = keys_folds
+
+    # Получение отступов между фигурами
+    @property
+    def subplots_adjust(self): return self._subplots_adjust
+
+    # Установка отступов между фигурами
+    @subplots_adjust.setter
+    def subplots_adjust(self, pad):
+        if type(pad) is not tuple or len(pad) != 2: return self._subplots_adjust
+        else: self._subplots_adjust = pad
+
+    # Получение Y отступа заголовка от вершины осей
+    @property
+    def suptitle_y(self): return self._suptitle_y
+
+    # Установка Y отступа заголовка от вершины осей
+    @suptitle_y.setter
+    def suptitle_y(self, pad): self._suptitle_y = pad

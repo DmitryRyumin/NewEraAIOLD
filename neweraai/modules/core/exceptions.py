@@ -32,3 +32,11 @@ class PresetCFREncodeVideoError(NewEraAIException):
 class SRInputTypeError(NewEraAIException):
     """Указан неподдерживаемый тип файла для распознавания речи"""
     pass
+
+class IsADirectoryOriginalError(NewEraAIException):
+    """Директории с оригинальными видео не найдена"""
+    pass
+
+class IsADirectorySplittedError(NewEraAIException):
+    """Директории с разделенными видеофрагментами не найдена"""
+    pass

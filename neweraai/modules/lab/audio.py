@@ -20,9 +20,8 @@ import torch         # Машинное обучение от Facebook
 import urllib.parse  # Парсинг URL
 import urllib.error  # Обработка ошибок URL
 import pandas as pd  # Обработка и анализ данных
-import shutil        # Набор функций высокого уровня для обработки файлов, групп файлов, и папок
 
-from pathlib import Path, PosixPath  # Работа с путями в файловой системе
+from pathlib import Path  # Работа с путями в файловой системе
 
 from pymediainfo import MediaInfo         # Получение meta данных из медиафайлов
 from datetime import datetime, timedelta  # Работа со временем
@@ -33,7 +32,8 @@ from IPython.display import clear_output, display
 from IPython.utils import io  # Подавление вывода
 
 # Персональные
-from neweraai.modules.core.exceptions import TypeEncodeVideoError, PresetCFREncodeVideoError, SRInputTypeError
+from neweraai.modules.core.exceptions import TypeEncodeVideoError, PresetCFREncodeVideoError, SRInputTypeError,\
+    IsADirectoryOriginalError, IsADirectorySplittedError
 from neweraai.modules.lab.speech import Speech  # Распознавание речи
 
 # ######################################################################################################################
@@ -50,7 +50,6 @@ class Messages(Speech):
     def __post_init__(self):
         super().__post_init__()  # Выполнение конструктора из суперкласса
 
-        self._files_not_found: str = self._('В указанной директории необходимые файлы не найдены ...')
         self._extract_audio_from_video: str = self._('Извлечение аудиодорожек из видеофайлов ...')
         self._curr_progress: str = '{} ' + self._from_precent + ' {} ({}%) ... {} ...'
         self._curr_progress_vad: str = ('{} ' + self._from_precent + ' {} ({}%) ... {} ({} '
@@ -130,16 +129,18 @@ class Audio(Messages):
         self.__sr: bool = True  # Распознавать речь
         self.__i: int = 0  # Счетчик
         self.__len_paths: int = 0  # Количество видеофайлов
-        self.__splitted_video: str = ''  # Директория с разделенными видеофрагментами
-        self.__splitted_audio: str = ''  # Директория с разделенными аудиофрагментами
+        self.__splitted_video: List[str] = []  # Директории с разделенными видеофрагментами
+        self.__splitted_audio: List[str] = []  # Директории с разделенными аудиофрагментами
+        self.__curr_path_parent: str = ''  # Родительский каталог
         self.__sr_input_type: str = ''  # Тип файла для распознавания речи
         self.__type_encode: str = ''  # Тип кодирования
         self.__crf_value: int = 0  # Качество кодирования
         self.__presets_crf_encode: str = ''  # Параметр обеспечивающий определенную скорость кодирования и сжатия
         self.__curr_ts_cart_name: str = ''  # Текущее время для корзины с не отсортированными файлами (TimeStamp)
-        self.__part_video_path: List[str] = []  # Путь до видеофрагмента
-        self.__part_audio_path: List[str] = []  # Пути до аудиофрагментов
+        self.__part_video_path: str = ''  # Путь до видеофрагмента
+        self.__part_audio_path: str = ''  # Пути до аудиофрагментов
         self.__front: List[str] = []  # Суффикс для аудиофрагментов
+        self.__key_audio_sr: int = 0  #Ключ для имен аудиофрагментов
 
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
@@ -347,7 +348,7 @@ class Audio(Messages):
             if type(item) is str and item:
                 try:
                     # Искомое значение найдено
-                    if item.lower().replace(' ', '_') == val: return True, item
+                    if item.lower().replace(' ', '_') == val.lower(): return True, item
                 except Exception: continue
             # Текущее значение - список не вложенный
             if type(item) is list and Audio._nest_level(item) < 2:
@@ -366,7 +367,7 @@ class Audio(Messages):
         Возвращает: True если текстовое представление речи найдено в словаре, в обратном случае False
         """
 
-        curr_val = results_recognized.replace(' ', '_')  # Директория для сохранения файла
+        curr_val = results_recognized.replace(' ', '_').lower().capitalize()  # Директория для сохранения файла
 
         # Рекурсивный поиск значения в списке
         filter_sr = self._recursive_search_value_in_filter_sr(self._filter_sr, curr_val)
@@ -376,15 +377,22 @@ class Audio(Messages):
             # Текущее время (TimeStamp)
             curr_ts = curr_val + '_' + str(datetime.now().timestamp()).replace('.', '_')
 
-            curr_val = self.cart_name + self.__curr_ts_cart_name  # Директория для сохранения файла
+            # Директория для сохранения файла
+            curr_val = self.cart_name + self.__curr_ts_cart_name
         else:  # Речь найдена
             curr_val = filter_sr[1].replace(' ', '_')  # Директория для сохранения файла
 
             curr_ts = str(datetime.now().timestamp()).replace('.', '_')  # Текущее время (TimeStamp)
 
         # Директория для текущей сортировки распознанной речи
-        dir_curr_sr_video = os.path.join(self.__splitted_video, curr_val)
-        dir_curr_sr_audio = os.path.join(self.__splitted_audio, curr_val)
+        dir_curr_sr_video = os.path.join(
+            self.path_to_original_videos, self._re_inv_chars(self.sub_folder[1]),
+            '' if self.__curr_path_parent == '.' else self.__curr_path_parent, self._dir_va[0],
+            curr_val if len(self._filter_sr) > 0 else '')
+        dir_curr_sr_audio = os.path.join(
+            self.path_to_original_videos, self._re_inv_chars(self.sub_folder[1]),
+            '' if self.__curr_path_parent == '.' else self.__curr_path_parent, self._dir_va[1],
+            curr_val if len(self._filter_sr) > 0 else '')
 
         try:
             # Проход по всем директориям для сортировки распознанной речи
@@ -393,15 +401,18 @@ class Audio(Messages):
         except Exception: return False
         else:
             # Путь до видеофрагмента
-            self.__part_video_path = os.path.join(dir_curr_sr_video, curr_ts
-                                                  + Path(self.__curr_path).suffix.lower())
+            self.__part_video_path = os.path.join(dir_curr_sr_video, curr_ts + Path(self.__curr_path).suffix.lower())
 
-            # Проход по всем путям до аудиофрагментов
-            for cnt_audio, _ in enumerate(self.__part_audio_path):
-                self.__part_audio_path[cnt_audio] = os.path.join(
-                    dir_curr_sr_audio, curr_ts + self.__front[cnt_audio] + self.ext_audio)
+            if len(self._filter_sr) > 0:
+                for cnt_audio, _ in enumerate(self.__part_audio_path):
+                    self.__part_audio_path[cnt_audio] = os.path.join(
+                        dir_curr_sr_audio, curr_ts + self.__front[cnt_audio] + self.ext_audio)
+            else:
+                self.__part_audio_path[self.__key_audio_sr] = os.path.join(
+                    dir_curr_sr_audio, curr_ts + self.__front[self.__key_audio_sr] + self.ext_audio)
 
-        if filter_sr[0] is True: return True  # Текстовое представление речи найдено в словаре
+        # Текстовое представление речи найдено в словаре
+        if len(self._filter_sr) > 0 and filter_sr[0] is True: return True
         else: return False
 
     # Анализ аудиодорожки и процесс распознавания речи
@@ -447,21 +458,29 @@ class Audio(Messages):
 
                 diff_time = end_time - start_time  # Разница между начальным и конечным временем
 
+                self.__curr_path_parent = str(Path(self.__local_path(self.__curr_path)).parent)  # Родительский каталог
+
                 # Путь до видеофрагмента
-                self.__part_video_path = os.path.join(self.__splitted_video,
+                self.__part_video_path = os.path.join(
+                    self.path_to_original_videos, self._re_inv_chars(self.sub_folder[1]),
+                    '' if self.__curr_path_parent == '.' else self.__curr_path_parent, self._dir_va[0],
                     Path(self.__curr_path).stem + '_' + str(cnt) + Path(self.__curr_path).suffix.lower())
 
                 self.__part_audio_path = []  # Пути до аудиофрагментов
 
                 if channels_audio == 1:  # Моно канал
                     self.__front = ['_m']  # Суффикс для аудиофрагментов
-                    self.__part_audio_path.append(os.path.join(self.__splitted_audio,
-                                                        Path(self.__curr_path).stem + '_' + str(cnt) + self.ext_audio))
+                    self.__part_audio_path.append(os.path.join(
+                        self.path_to_original_videos, self._re_inv_chars(self.sub_folder[1]),
+                        '' if self.__curr_path_parent == '.' else self.__curr_path_parent, self._dir_va[1],
+                        Path(self.__curr_path).stem + '_' + str(cnt) + self.ext_audio))
                 elif channels_audio == 2:  # Стерео канал
                     self.__front = ['_l', '_r']  # Суффиксы для аудиофрагментов
                     for ch in self.__front:
-                        self.__part_audio_path.append(os.path.join(self.__splitted_audio,
-                                               Path(self.__curr_path).stem + '_' + str(cnt) + ch + self.ext_audio))
+                        self.__part_audio_path.append(os.path.join(
+                            self.path_to_original_videos, self._re_inv_chars(self.sub_folder[1]),
+                            '' if self.__curr_path_parent == '.' else self.__curr_path_parent, self._dir_va[1],
+                            Path(self.__curr_path).stem + '_' + str(cnt) + ch + self.ext_audio))
 
                 # Удаление видеофайла
                 if os.path.isfile(self.__part_video_path) is True: os.remove(self.__part_video_path)
@@ -473,43 +492,44 @@ class Audio(Messages):
                 if self.__sr_input_type == self._dir_va[0]: path_to_file_vosk_sr = self.__curr_path
                 else: path_to_file_vosk_sr = self.__audio_path  # Распознавание речи по аудио
 
-                # Распознавание речи (Vosk)
-                res_vosk_sr = self._vosk_sr(
-                    path_to_file = path_to_file_vosk_sr, ss = str(start_time), to = str(end_time), runtime = False,
-                    last = True, out = False, logs = False, run = True)
+                # Распознавание речи
+                if self.__sr is True:
+                    # Распознавание речи (Vosk)
+                    res_vosk_sr = self._vosk_sr(
+                        path_to_file = path_to_file_vosk_sr, ss = str(start_time), to = str(end_time), runtime = False,
+                        last = True, out = False, logs = False, run = True)
 
-                if len(res_vosk_sr) == 0: continue  # Речь не найдена
+                    if len(res_vosk_sr) == 0: continue  # Речь не найдена
 
-                sr_curr_res_true = False  # По умолчанию речь не найдена
+                    sr_curr_res_true = False  # По умолчанию речь не найдена
 
-                # Распознавание речи по видео
-                if type(res_vosk_sr) is list:
-                    res_vosk_sr = res_vosk_sr[0][0].lower()
+                    # Распознавание речи по видео
+                    if type(res_vosk_sr) is list:
+                        res_vosk_sr = res_vosk_sr[0][0].lower()
 
-                    if res_vosk_sr == '': continue  # Речь не найдена
-
-                    sr_curr_res_true = True  # Речь найдена
-
-                    # Распознавание речи
-                    if self.__sr is True: self.__sort_file_vad(res_vosk_sr)
-                # Распознавание речи по аудио
-                elif type(res_vosk_sr) is dict:
-                    # Пройтись по аудиоканалам
-                    for key, val in res_vosk_sr.items():
-                        if len(val) == 0: continue  # Речь не найдена
-
-                        curr_val = val[0][0].lower()  # Текущий результат распознавания
-
-                        if curr_val == '': continue  # Речь не найдена
+                        if res_vosk_sr == '': continue  # Речь не найдена
 
                         sr_curr_res_true = True  # Речь найдена
 
-                        # Распознавание речи
-                        if self.__sr is True:
+                        self.__sort_file_vad(res_vosk_sr)  # Сортировка файла в зависимости от распознанной речи
+                    # Распознавание речи по аудио
+                    elif type(res_vosk_sr) is dict:
+                        # Пройтись по аудиоканалам
+                        for key, val in enumerate(res_vosk_sr.items()):
+                            if len(val[1]) == 0: continue  # Речь не найдена
+
+                            curr_val = val[1][0][0].lower()  # Текущий результат распознавания
+
+                            if curr_val == '': continue  # Речь не найдена
+
+                            sr_curr_res_true = True  # Речь найдена
+
+                            self.__key_audio_sr = key
                             if self.__sort_file_vad(curr_val) is True: break
+                else: sr_curr_res_true = True  # VAD
 
                 # Речь найдена
-                if sr_curr_res_true:
+                if sr_curr_res_true is True:
                     not_saved_files = lambda: self.__not_saved_files.append(
                         [self.__curr_path, str(start_time), str(end_time)])
                     try:
@@ -813,154 +833,187 @@ class Audio(Messages):
                     except (TypeError, IndexError): self._other_error(self._som_ww, out = out); return None
                     except Exception: self._other_error(self._unknown_err, out = out); return None
                     else:
-                        try:
-                            # Создание директории с разделенными видеофрагментами
-                            splitted = self._create_folder(splitted)
-                            if not splitted: raise IsADirectoryError  # Директория не создана
+                        original_side = []  # Директории с оригинальными видео
+                        splitted_side = []  # Директории с разделенными видеофрагментами
 
-                            # Очистка директории с разделенными видеофрагментами
-                            if clear_dir is True: self._clear_folder(splitted)
-                            if os.path.isdir(original) is False: raise IsADirectoryError
-                        except IsADirectoryError:
-                            self._other_error(self._folder_not_found.format(self._info_wrapper(splitted)), out = out)
-                            return None
+                        # Названия каталогов для обработки видео с разных ракурсов
+                        side_folder = [
+                            f.name for f in Path(original).iterdir() if f.is_dir() and not f.name.startswith('.')
+                        ]
+
+                        # Названия каталогов для обработки видео с разных ракурсов
+                        if len(side_folder) > 0:
+                            # Проход по всем ракурсам
+                            for side in side_folder:
+                                if type(side) is str and side:
+                                    # Директории с оригинальными видео
+                                    original_side.append(os.path.join(original, self._re_inv_chars(side)))
+                                    # Директории с разделенными видеофрагментами
+                                    splitted_side.append(os.path.join(splitted, self._re_inv_chars(side)))
+
+                        # Каталоги с видео записанных с разных ракурсов не указаны
+                        if len(original_side) == 0 and len(splitted_side) == 0:
+                            original_side.append(original)  # Директории с оригинальными видео
+                            splitted_side.append(splitted)  # Директории с разделенными видеофрагментами
+
+                        try:
+                            if len(original_side) != len(splitted_side): raise IndexError
+                        except IndexError: self._other_error(self._som_ww, out = out); return None
+
+                        # Очистка директории с разделенными видеофрагментами
+                        if clear_dir is True: self._clear_folder(splitted)
+
+                        paths = []  # Пути до видеофайлов
+
+                        self.__splitted_video = []  # Директории с разделенными видеофрагментами
+                        self.__splitted_audio = []  # Директории с разделенными аудиофрагментами
+
+                        # Проход по всем индексам каталогов
+                        for i in range(len(original_side)):
+                            try:
+                                # Создание директории с разделенными видеофрагментами
+                                splitted = self._create_folder(splitted_side[i])
+                                if not splitted: raise IsADirectorySplittedError  # Директория не создана
+
+                                if os.path.isdir(original_side[i]) is False: raise IsADirectoryOriginalError
+                            except IsADirectorySplittedError:
+                                self._other_error(self._folder_not_found.format(self._info_wrapper(splitted)),
+                                                  out = out); return None
+                            except IsADirectoryOriginalError:
+                                self._other_error(self._folder_not_found.format(self._info_wrapper(original_side[i])),
+                                                  out = out); return None
+                            except Exception: self._other_error(self._unknown_err, out = out); return None
+                            else:
+                                # Директория с разделенными видеофрагментами
+                                self.__splitted_video.append(os.path.join(splitted, self._dir_va[0]))
+                                if not os.path.exists(self.__splitted_video[-1]): os.makedirs(self.__splitted_video[-1])
+                                # Директория с разделенными аудиофрагментами
+                                self.__splitted_audio.append(os.path.join(splitted, self._dir_va[1]))
+                                if not os.path.exists(self.__splitted_audio[-1]): os.makedirs(self.__splitted_audio[-1])
+
+                                # Формирование списка с видеофайлами
+                                for p in Path(original_side[i]).rglob('*'):
+                                    try:
+                                        if type(self.ext_video) is not list or len(self.ext_video) < 1: raise TypeError
+
+                                        self.ext_video = [x.lower() for x in self.ext_video]
+                                    except TypeError: self._other_error(self._som_ww, out = out); return None
+                                    except Exception: self._other_error(self._unknown_err, out = out); return None
+                                    else:
+                                        # Добавление текущего пути к видеофайлу в список
+                                        if p.suffix.lower() in self.ext_video: paths.append(p.resolve())
+                        # Директория с оригинальными видео не содержит видеофайлов с необходимым расширением
+                        try:
+                            self.__len_paths = len(paths) # Количество видеофайлов
+
+                            if self.__len_paths == 0: raise TypeError
+                        except TypeError: self._other_error(self._files_not_found, out = out)
                         except Exception: self._other_error(self._unknown_err, out = out)
                         else:
-                            # Директория с разделенными видеофрагментами
-                            self.__splitted_video = os.path.join(splitted, self._dir_va[0])
-                            if not os.path.exists(self.__splitted_video): os.makedirs(self.__splitted_video)
-                            # Директория с разделенными аудиофрагментами
-                            self.__splitted_audio = os.path.join(splitted, self._dir_va[1])
-                            if not os.path.exists(self.__splitted_audio): os.makedirs(self.__splitted_audio)
+                            # Распознавание речи
+                            if self.__sr is True:
+                                # Загрузка и активация модели Vosk для распознавания речи
+                                if self._vosk(new_name = new_name_sr, force_reload = force_reload, runtime = False,
+                                              out = out, run = True) is False: return None
 
-                            paths = []  # Пути до видеофайлов
+                                # Создание директорий под фильтр распознавания речи
+                                if create_folder_filter_sr is True:
+                                    show_info = False  # Информационное сообщение не показано
 
-                            # Формирование списка с видеофайлами
-                            for p in Path(original).rglob('*'):
-                                try:
-                                    if type(self.ext_video) is not list or len(self.ext_video) < 1: raise TypeError
+                                    # Проход по всему фильтру
+                                    for item in self.filter_sr:
+                                        # Текущее значение не пустая строка
+                                        if type(item) is str and item:
+                                            try: item = item.lower().replace(' ', '_').capitalize()
+                                            except Exception: continue
+                                        # Текущее значение - список не вложенный
+                                        if type(item) is list and self._nest_level(item) < 2:
+                                            try: item = item[0].lower().replace(' ', '_').capitalize()
+                                            except Exception: continue
 
-                                    self.ext_video = [x.lower() for x in self.ext_video]
-                                except TypeError: self._other_error(self._som_ww, out = out); return None
-                                except Exception: self._other_error(self._unknown_err, out = out); return None
-                                else:
-                                    if p.suffix.lower() in self.ext_video:
-                                        # Добавление текущего пути к видеофайлу в список
-                                        paths.append(p.resolve())
+                                        # Информационное сообщение не показано
+                                        if show_info is False:
+                                            clear_output(True)
+                                            # Информационное сообщение
+                                            self._info(self._create_folder_filter_sr, last = False, out = False)
+                                            # Отображение истории вывода сообщений в ячейке Jupyter
+                                            if out: self.show_notebook_history_output()
 
-                            # Директория с оригинальными видео не содержит видеофайлов с необходимым расширением
-                            try:
-                                self.__len_paths = len(paths) # Количество видеофайлов
+                                            show_info = True  # Информационное сообщение показано
 
-                                if self.__len_paths == 0: raise TypeError
-                            except TypeError: self._other_error(self._files_not_found, out = out)
-                            except Exception: self._other_error(self._unknown_err, out = out)
-                            else:
-                                # Распознавание речи
-                                if self.__sr is True:
-                                    # Загрузка и активация модели Vosk для распознавания речи
-                                    if self._vosk(new_name = new_name_sr, force_reload = force_reload, runtime = False,
-                                                  out = out, run = True) is False: return None
-
-                                    # Создание директорий под фильтр распознавания речи
-                                    if create_folder_filter_sr is True:
-                                        show_info = False  # Информационное сообщение не показано
-
-                                        # Проход по всему фильтру
-                                        for item in self.filter_sr:
-                                            # Текущее значение не пустая строка
-                                            if type(item) is str and item:
-                                                try: item = item.lower().replace(' ', '_')
-                                                except Exception: continue
-                                            # Текущее значение - список не вложенный
-                                            if type(item) is list and self._nest_level(item) < 2:
-                                                try: item = item[0].lower().replace(' ', '_')
-                                                except Exception: continue
-
-                                            # Информационное сообщение не показано
-                                            if show_info is False:
-                                                clear_output(True)
-                                                # Информационное сообщение
-                                                self._info(self._create_folder_filter_sr, last = False, out = False)
-                                                # Отображение истории вывода сообщений в ячейке Jupyter
-                                                if out: self.show_notebook_history_output()
-
-                                                show_info = True  # Информационное сообщение показано
-
-                                            # Директория для сортировки распознанной речи
-                                            dir_curr_sr_video = os.path.join(self.__splitted_video, item)
-                                            dir_curr_sr_audio = os.path.join(self.__splitted_audio, item)
+                                        # Директории для сортировки распознанной речи
+                                        for splitted in list(set().union(
+                                                self.__splitted_video, self.__splitted_audio)):
+                                            dir_curr_sr_video = os.path.join(splitted, item)
 
                                             try:
-                                                # Проход по всем директориям для сортировки распознанной речи
-                                                for dir_curr_sr in [dir_curr_sr_video, dir_curr_sr_audio]:
-                                                    # Создание директории
-                                                    if not os.path.exists(dir_curr_sr): os.makedirs(dir_curr_sr)
+                                                # Создание директории
+                                                if not os.path.exists(dir_curr_sr_video):
+                                                    os.makedirs(dir_curr_sr_video)
                                             except Exception:
                                                 self._other_error(self._unknown_err, out = out); return None
 
-                                self.__unprocessed_files = []  # Видеофайлы на которых VAD не отработал
-                                self.__not_saved_files = []  # Видеофайлы которые не сохранились при обработке VAD
+                            self.__unprocessed_files = []  # Видеофайлы на которых VAD не отработал
+                            self.__not_saved_files = []  # Видеофайлы которые не сохранились при обработке VAD
 
-                                # Локальный путь
-                                self.__local_path = lambda path: os.path.join(
-                                    *Path(path).parts[-abs((len(Path(path).parts) - len(Path(original).parts))):])
+                            # Локальный путь
+                            self.__local_path = lambda path: os.path.join(
+                                *Path(path).parts[-abs((len(Path(path).parts) - len(Path(original).parts))):])
 
-                                last = False  # Замена последнего сообщения
+                            last = False  # Замена последнего сообщения
 
-                                # Проход по всем найденным видеофайлам
-                                for i, curr_path in enumerate(paths):
-                                    self.__curr_path = curr_path  # Текущий видеофайл, который обрабатывается VAD + SR
-                                    self.__i = i  # Счетчик
+                            # Проход по всем найденным видеофайлам
+                            for i, curr_path in enumerate(paths):
+                                self.__curr_path = curr_path  # Текущий видеофайл, который обрабатывается VAD + SR
+                                self.__i = i  # Счетчик
 
-                                    if self.__i != 0: last = True
+                                if self.__i != 0: last = True
 
-                                    # Индикатор выполнения
-                                    self.__progressbar_audio(
-                                        self._audio_track_analysis.format(self._audio_track_sr if sr is True else ''),
-                                        self.__i, self.__local_path(self.__curr_path), last, self.__len_paths,
-                                        out = out)
-
-                                    try:
-                                        if not self.ext_audio: raise ValueError
-                                        # Путь до аудиофайла
-                                        self.__audio_path = os.path.join(
-                                            Path(self.__curr_path).parent, Path(self.__curr_path).stem + self.ext_audio)
-                                    except (TypeError, ValueError):
-                                        self.__unprocessed_files.append(self.__curr_path); continue
-                                    except Exception: self.__unprocessed_files.append(self.__curr_path); continue
-                                    else:
-                                        # Аудиофайл не найден
-                                        if os.path.isfile(self.__audio_path) is False:
-                                            self.__unprocessed_files.append(self.__curr_path); continue
-
-                                        try:
-                                            # Чтение аудиофайла
-                                            self.__wav = read_audio(self.__audio_path, target_sr = self._freq_sr)
-                                        except RuntimeError: self.__unprocessed_files.append(self.__curr_path); continue
-                                        except Exception: self.__unprocessed_files.append(self.__curr_path); continue
-                                        else:
-                                            # Анализ аудиодорожки и процесс распознавания речи
-                                            self.__audio_analysis(out = out)
-
-                                # Индикатор выполнения извлечения аудиодорожки из видеофайла
+                                # Индикатор выполнения
                                 self.__progressbar_audio(
                                     self._audio_track_analysis.format(self._audio_track_sr if sr is True else ''),
-                                    self.__len_paths, self.__local_path(paths[-1]), True, self.__len_paths, out = out)
+                                    self.__i, self.__local_path(self.__curr_path), last, self.__len_paths,
+                                    out = out)
 
-                                # Уникальные значения
-                                unprocessed_files_unique = set()
-                                for x in self.__unprocessed_files: unprocessed_files_unique.add(x)
-                                unprocessed_files_unique = list(unprocessed_files_unique)
+                                try:
+                                    if not self.ext_audio: raise ValueError
+                                    # Путь до аудиофайла
+                                    self.__audio_path = os.path.join(
+                                        Path(self.__curr_path).parent, Path(self.__curr_path).stem + self.ext_audio)
+                                except (TypeError, ValueError):
+                                    self.__unprocessed_files.append(self.__curr_path); continue
+                                except Exception: self.__unprocessed_files.append(self.__curr_path); continue
+                                else:
+                                    # Аудиофайл не найден
+                                    if os.path.isfile(self.__audio_path) is False:
+                                        self.__unprocessed_files.append(self.__curr_path); continue
 
-                                if len(unprocessed_files_unique) == 0 and len(self.__not_saved_files) == 0:
-                                    self._info_true(self._vad_true, out = out); return None
+                                    try:
+                                        # Чтение аудиофайла
+                                        self.__wav = read_audio(self.__audio_path, target_sr = self._freq_sr)
+                                    except RuntimeError: self.__unprocessed_files.append(self.__curr_path); continue
+                                    except Exception: self.__unprocessed_files.append(self.__curr_path); continue
+                                    else:
+                                        # Анализ аудиодорожки и процесс распознавания речи
+                                        self.__audio_analysis(out = out)
+                            # Индикатор выполнения извлечения аудиодорожки из видеофайла
+                            self.__progressbar_audio(
+                                self._audio_track_analysis.format(self._audio_track_sr if sr is True else ''),
+                                self.__len_paths, self.__local_path(paths[-1]), True, self.__len_paths, out = out)
 
-                                # Список видеофайлов на которых VAD не отработал
-                                if len(unprocessed_files_unique) > 0:
-                                    self.__save_log_vad(unprocessed_files_unique, out, logs)
-                                # Список видеофайлов которые не сохранились
-                                if len(self.__not_saved_files) > 0:
-                                    self.__save_log_save_sr(self.__not_saved_files, out, logs)
+                            # Уникальные значения
+                            unprocessed_files_unique = set()
+                            for x in self.__unprocessed_files: unprocessed_files_unique.add(x)
+                            unprocessed_files_unique = list(unprocessed_files_unique)
+
+                            if len(unprocessed_files_unique) == 0 and len(self.__not_saved_files) == 0:
+                                self._info_true(self._vad_true, out = out); return None
+
+                            # Список видеофайлов на которых VAD не отработал
+                            if len(unprocessed_files_unique) > 0:
+                                self.__save_log_vad(unprocessed_files_unique, out, logs)
+                            # Список видеофайлов которые не сохранились
+                            if len(self.__not_saved_files) > 0:
+                                self.__save_log_save_sr(self.__not_saved_files, out, logs)
             finally:
                 if runtime: self._r_end(out = out)

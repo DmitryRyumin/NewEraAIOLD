@@ -14,12 +14,13 @@ REQUIRED_PACKAGES = [
     'torchaudio >= 0.8.1',
     'SoundFile >= 0.10.3.post1',
     'numpy >= 1.20.2',
-    'pandas >= 1.2.3',
+    'pandas >= 1.2.4',
     'matplotlib >= 3.4.1',
-    'jupyterlab >= 3.0.13',
-    'pymediainfo >= 5.0.3',
+    'jupyterlab >= 3.0.14',
+    'pymediainfo >= 5.0.4',
     'requests >= 2.25.1',
-    'vosk >= 0.3.21'
+    'vosk >= 0.3.22',
+    'seaborn >= 0.11.1'
 ]
 
 CLASSIFIERS = """\
