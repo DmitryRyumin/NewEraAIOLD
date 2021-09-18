@@ -11,7 +11,7 @@
 
 <h4><span style="color:#DB534F;">Fixed bugs</span></h4>
 
-- Fixed a bug in the `vosk_sr` method of the [Speech](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/speech.py) class and the` vad` method of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class, which did not allow speech recognition in cases where the audio or video file lacked information distinguishable from speech (silence, noise, knocking, etc.)
+- Fixed a bug in the `vosk_sr` method of the [Speech](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/speech.py) class and the `vad` method of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class, which did not allow speech recognition in cases where the audio or video file lacked information distinguishable from speech (silence, noise, knocking, etc.)
 - Fixed typos
 
 ## April 17, 2021
