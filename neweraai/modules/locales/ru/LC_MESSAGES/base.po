@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
-"POT-Creation-Date: 2021-04-17 23:23+0300\n"
-"PO-Revision-Date: 2021-04-17 23:23+0300\n"
+"POT-Creation-Date: 2021-09-18 23:23+0300\n"
+"PO-Revision-Date: 2021-09-18 23:23+0300\n"
 "Last-Translator: Dmitry Ryumin <dl_03.03.1991@mail.ru>\n"
 "Language-Team: Russian <dl_03.03.1991@mail.ru>\n"
 "MIME-Version: 1.0\n"
@@ -15,48 +15,48 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: neweraai/modules/core/core.py:58
+#: neweraai/modules/core/core.py:59
 msgid "Файл"
 msgstr ""
 
-#: neweraai/modules/core/core.py:59
+#: neweraai/modules/core/core.py:60
 msgid "Линия"
 msgstr ""
 
-#: neweraai/modules/core/core.py:60
+#: neweraai/modules/core/core.py:61
 msgid "Метод"
 msgstr ""
 
-#: neweraai/modules/core/core.py:61
+#: neweraai/modules/core/core.py:62
 msgid "Тип ошибки"
 msgstr ""
 
-#: neweraai/modules/core/core.py:63
+#: neweraai/modules/core/core.py:64
 msgid "сек."
 msgstr ""
 
-#: neweraai/modules/core/core.py:65
+#: neweraai/modules/core/core.py:66
 msgid "расширение файла должно быть одно из \"{}\" ..."
 msgstr ""
 
-#: neweraai/modules/core/core.py:66 neweraai/modules/lab/audio.py:65
+#: neweraai/modules/core/core.py:67 neweraai/modules/lab/audio.py:65
 #: neweraai/modules/lab/download.py:47
 msgid " (ошибка {})"
 msgstr ""
 
-#: neweraai/modules/core/core.py:67
+#: neweraai/modules/core/core.py:68
 msgid "не удалось сохранить LOG файл{} ..."
 msgstr ""
 
-#: neweraai/modules/core/core.py:68
+#: neweraai/modules/core/core.py:69
 msgid "файл \"{}\" не найден ..."
 msgstr ""
 
-#: neweraai/modules/core/core.py:69
+#: neweraai/modules/core/core.py:70
 msgid "META информация не найдена ..."
 msgstr ""
 
-#: neweraai/modules/core/core.py:71
+#: neweraai/modules/core/core.py:72
 msgid "директория \"{}\" не найдена ..."
 msgstr ""
 
@@ -112,11 +112,15 @@ msgstr ""
 msgid "Лог файл успешно сохранен ..."
 msgstr ""
 
-#: neweraai/modules/core/messages.py:56
+#: neweraai/modules/core/messages.py:55
+msgid "Лог файлы успешно сохранены ..."
+msgstr ""
+
+#: neweraai/modules/core/messages.py:57
 msgid "из"
 msgstr ""
 
-#: neweraai/modules/core/messages.py:58
+#: neweraai/modules/core/messages.py:59
 msgid "Выполнение заблокировано пользователем ..."
 msgstr ""
 
@@ -228,43 +232,55 @@ msgstr ""
 msgid "Всего найдено {}{} текстовых последовательностей ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:59
+#: neweraai/modules/lab/statistics.py:60
 msgid "В указанной директории необходимые файлы не найдены ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:60
+#: neweraai/modules/lab/statistics.py:61
 msgid "Всего найдено {} файлов с расширением {} ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:61
+#: neweraai/modules/lab/statistics.py:62
 msgid "DataFrame c данными пустой ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:62
+#: neweraai/modules/lab/statistics.py:63
 msgid "Всего найдено {} пустых классов ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:63
+#: neweraai/modules/lab/statistics.py:64
 msgid "В DataFrame пустых классов не найдено ... это хороший знак ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:228
-msgid "Количество"
+#: neweraai/modules/lab/statistics.py:65
+msgid "Всего найдено синхронизированных файлов {} и {}: {} из {} ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:296
-msgid "Сбалансированность классов"
+#: neweraai/modules/lab/statistics.py:67
+msgid "Все файлы {} аннотированы ... это хороший знак ..."
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:311
-msgid "ID класса"
+#: neweraai/modules/lab/statistics.py:68
+msgid "Всего найдено {} файлов без аннотирования ..."
 msgstr ""
 
 #: neweraai/modules/lab/statistics.py:319
+msgid "Количество"
+msgstr ""
+
+#: neweraai/modules/lab/statistics.py:387
+msgid "Сбалансированность классов"
+msgstr ""
+
+#: neweraai/modules/lab/statistics.py:402
+msgid "ID класса"
+msgstr ""
+
+#: neweraai/modules/lab/statistics.py:410
 msgid "Количество экземпляров в каждом классе"
 msgstr ""
 
-#: neweraai/modules/lab/statistics.py:395
+#: neweraai/modules/lab/statistics.py:486
 msgid "Сбалансированность классов выборки"
 msgstr ""
 

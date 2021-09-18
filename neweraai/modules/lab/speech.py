@@ -83,7 +83,7 @@ class Speech(Messages):
                 # Русский язык
                 'ru' : {
                     'big': 'vosk-model-ru-0.10.zip',
-                    'small': 'vosk-model-small-ru-0.4.zip'
+                    'small': 'vosk-model-small-ru-0.15.zip'
                 },
                 # Английский язык
                 'en': {
@@ -232,6 +232,7 @@ class Speech(Messages):
                 try:
                     # Активация распознавания речи
                     self._speech_rec = KaldiRecognizer(self._speech_model, self._freq_sr)
+                    self._speech_rec.SetWords(True)  # Данные о начале и конце слова/фразы
                 except Exception: self._other_error(self._unknown_err, last = last, out = out); return {}
                 else:
                     results_recognized[front] = []  # Словарь для результатов определенного канала
@@ -302,7 +303,7 @@ class Speech(Messages):
 
                 ss_split = ss_split[:-1] + ss_split[-1].split('.') # Разбиение секунд и миллисекунд
 
-                # Проход по всем временым значениям
+                # Проход по всем временным значениям
                 for cnt, val in enumerate(ss_split):
                     try:
                         ss_split[cnt] = int(val)  # Попытка приведения строкового числа к числу
@@ -398,6 +399,7 @@ class Speech(Messages):
                                     self._speech_model = Model(str(self._path_to_unzip))  # Активация модели
                                     # Активация распознавания речи
                                     self._speech_rec = KaldiRecognizer(self._speech_model, self._freq_sr)
+                                    self._speech_rec.SetWords(True)  # Данные о начале и конце слова/фразы
                                 except Exception: self._other_error(self._unknown_err, out = out)
                                 else: return True
                     else: return False
@@ -473,6 +475,7 @@ class Speech(Messages):
                         try:
                             # Активация распознавания речи
                             self._speech_rec = KaldiRecognizer(self._speech_model, self._freq_sr)
+                            self._speech_rec.SetWords(True)  # Данные о начале и конце слова/фразы
                         except Exception: self._other_error(self._unknown_err, last = last, out = out); return []
                         else:
                             return self.__subprocess_vosk_sr_video(last, out, logs)

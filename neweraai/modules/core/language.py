@@ -10,10 +10,10 @@
 # ######################################################################################################################
 # Интернационализация (I18N) и локализация (L10N) (см. https://www.loc.gov/standards/iso639-2/php/code_list.php)
 #     1. locate pygettext.py
-#     2. /usr/local/Cellar/python@3.8/3.8.8/Frameworks/Python.framework/Versions/3.8/share/doc/python3.8/examples/Tools/
+#     2. /usr/local/Cellar/python@3.9/3.9.7/Frameworks/Python.framework/Versions/3.9/share/doc/python3.9/examples/Tools/
 #        i18n/pygettext.py -d neweraai -o neweraai/modules/locales/base.pot neweraai
 #     3. locate msgfmt.py
-#     4. /usr/local/Cellar/python@3.8/3.8.8/Frameworks/Python.framework/Versions/3.8/share/doc/python3.8/examples/Tools/
+#     4. /usr/local/Cellar/python@3.9/3.9.7/Frameworks/Python.framework/Versions/3.9/share/doc/python3.9/examples/Tools/
 #        i18n/msgfmt.py neweraai/modules/locales/en/LC_MESSAGES/base.po neweraai/modules/locales/en/LC_MESSAGES/base
 # Подавление Warning
 import warnings

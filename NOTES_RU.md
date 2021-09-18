@@ -1,5 +1,19 @@
 # NewEraAI - новая эра искусственного интеллекта 
 
+## 18 сентября 2021 года
+
+> `1.0.4`
+
+<h4><span style="color:#247CB4;">Изменения</span></h4>
+
+- Обновлена `small` модель для распознавания русского языка (версия: `0.15`)
+- Обновлены зависимости
+
+<h4><span style="color:#DB534F;">Исправления</span></h4>
+
+- Исправлена ошибка в методе `vosk_sr` класса [Speech](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/speech.py) и методе `vad` класса [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py), которая не позволяла распознавать речь в случаях, когда в аудио или видеофайле отсутствовала информация отличимая от речи (тишина, шум, стук и т.д.)
+- Исправлены опечатки
+
 ## 17 апреля 2021 года
 
 > `1.0.3`

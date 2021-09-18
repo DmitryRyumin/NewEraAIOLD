@@ -14,14 +14,15 @@ for warn in [UserWarning, FutureWarning]: warnings.filterwarnings('ignore', cate
 
 from dataclasses import dataclass  # Класс данных
 
-import os                        # Взаимодействие с файловой системой
-import numpy as np               # Научные вычисления
-import pandas as pd              # Обработка и анализ данных
-from pathlib import Path         # Работа с путями в файловой системе
-import re                        # Регулярные выражения
-import matplotlib.pyplot as plt  # MATLAB-подобный способ построения графиков
-import matplotlib as mpl         # Визуализация графиков
-import seaborn as sns            # Визуализация графиков (надстройка над matplotlib)
+import os                           # Взаимодействие с файловой системой
+import numpy as np                  # Научные вычисления
+import pandas as pd                 # Обработка и анализ данных
+from pathlib import Path            # Работа с путями в файловой системе
+import re                           # Регулярные выражения
+import matplotlib.pyplot as plt     # MATLAB-подобный способ построения графиков
+import matplotlib as mpl            # Визуализация графиков
+import seaborn as sns               # Визуализация графиков (надстройка над matplotlib)
+import xml.etree.ElementTree as et  # XML документ в виде дерева
 
 from matplotlib.ticker import MaxNLocator          # Работа с метками
 from matplotlib.legend_handler import HandlerBase  # Работа с легендой
@@ -61,6 +62,10 @@ class Messages(Download):
         self._df_files_is_empty: str = self._('DataFrame c данными пустой ...')
         self._all_find_empty_classes: str = self._('Всего найдено {} пустых классов ...')
         self._df_files_not_empty_classes: str = self._('В DataFrame пустых классов не найдено ... это хороший знак ...')
+        self._all_find_files_with_annotated: str = self._(
+            'Всего найдено синхронизированных файлов {} и {}: {} из {} ...')
+        self._all_find_files_is_annotated: str = self._('Все файлы {} аннотированы ... это хороший знак ...')
+        self._all_find_files_without_annotated: str = self._('Всего найдено {} файлов без аннотирования ...')
 
 # ######################################################################################################################
 # Статистика
@@ -77,8 +82,11 @@ class Statistics(Messages):
         super().__post_init__()  # Выполнение конструктора из суперкласса
 
         self._df_files: pd.DataFrame = pd.DataFrame()  # DataFrame с данными
-        self._dict_of_files: Dict[List[str], List[str], List[int]] = {}  # Словарь для DataFrame
+        self._dict_of_files: Dict[List[str], List[str], List[int]] = {}  # Словарь для DataFrame с данными
         self._labels_nan: List[int] = []  # Список с ID пустых классов
+
+        self._df_files_without_annotated: pd.DataFrame = pd.DataFrame()  # DataFrame с данными без аннотации
+        self._dict_of_files_without_annotated: Dict[List[str]] = {}  # Словарь для DataFrame с данными без аннотации
 
         self._stats_files: Dict[List[int], List[str], List[int]] = {}  # Словарь для статистики
         self._df_stats_files: pd.DataFrame = pd.DataFrame()  # DataFrame со статистикой
@@ -90,6 +98,20 @@ class Statistics(Messages):
 
         self._dir_va: List[str] = ['Video', 'Audio']  # Название каталогов для видео и аудио
 
+        self._ext_annotated: str = '.xml'  # Расширения аннотированных файлов
+
+        # ----------------------- Только для внутреннего использования внутри класса
+
+        self.__obj_det: bool = False  # Распознавание объектов
+        # Парсинг XML файла для аннотирования и распознавания объектов
+        self.__tags_in_xml: Dict[str or List[str]] = {
+            'obj': 'object',
+            'name': 'name',
+            'box': 'bndbox',
+            'path': 'path',
+            'bndbox': ['xmin', 'ymin', 'xmax', 'ymax']
+        }
+
     # ------------------------------------------------------------------------------------------------------------------
     # Свойства
     # ------------------------------------------------------------------------------------------------------------------
@@ -97,6 +119,10 @@ class Statistics(Messages):
     # DataFrame c данными
     @property
     def df_files(self): return self._df_files
+
+    # DataFrame c данными без аннотации
+    @property
+    def df_files_without_annotated(self): return self._df_files_without_annotated
 
     # DataFrame со статистикой
     @property
@@ -150,25 +176,87 @@ class Statistics(Messages):
 
             return new_path  # Список с директориями
 
-    # Добавление значений в словарь для DataFrame
-    def __append_to_list_of_files(self, path: str, class_name: str, out: bool = True) -> bool:
+    # Добавление значений в словарь для DataFrame c данными
+    def __append_to_list_of_files(self, path: str, class_names: List[str], out: bool = True) -> bool:
         """
-        Добавление значений в словарь для DataFrame
+        Добавление значений в словарь для DataFrame c данными
 
         Аргументы:
             path - Путь к файлу
-            class_name - Название класса
+            class_names - Названия классов
             out - Отображение
 
         Возвращает: True если значения в словарь для DataFrame были добавлены, в обратном случае False
         """
 
         try:
-            self._dict_of_files[self.keys_dataset[0]].append(path)
-            self._dict_of_files[self.keys_dataset[1]].append(class_name)
+            # Проход по всем классам
+            for cl in class_names:
+                self._dict_of_files[self.keys_dataset[0]].append(path)
+                self._dict_of_files[self.keys_dataset[1]].append(cl)
         except IndexError: self._other_error(self._som_ww, out = out); return False
         except Exception: self._other_error(self._unknown_err, out = out); return False
         else: return True
+
+    # Добавление значений в словарь для DataFrame c данными без аннотации
+    def __append_to_list_of_files_without_annotated(self, path: str, out: bool = True) -> bool:
+        """
+        Добавление значений в словарь для DataFrame c данными без аннотации
+
+        Аргументы:
+            path - Путь к файлу
+            out - Отображение
+
+        Возвращает: True если значения в словарь для DataFrame были добавлены, в обратном случае False
+        """
+
+        try: self._dict_of_files_without_annotated[self.keys_dataset[0]].append(path)
+        except IndexError: self._other_error(self._som_ww, out = out); return False
+        except Exception: self._other_error(self._unknown_err, out = out); return False
+        else: return True
+
+    # Получение аннотаций для распознавания объектов
+    def __get_annotated_classes(self, path: str):
+        """
+        Получение аннотаций для распознавания объектов
+
+        Аргументы:
+            path - Путь к файлу
+
+        Возвращает: Список с названиями аннотированных объектов
+        """
+
+        try:
+            if type(path) is not str: raise TypeError
+
+            # Файла с разметкой не существует
+            if os.path.isfile(path) is False: raise FileNotFoundError
+
+            tree = et.parse(path)  # Получение XML в виде дерева
+        except (TypeError, FileNotFoundError): return []
+        except et.ParseError: return []
+        except Exception: return []
+        else:
+            classes = []  # Список с названиями аннотированных объектов
+
+            root = tree.getroot()  # Получение корневого элемента
+
+            # Тег не найден
+            if root.find(self.__tags_in_xml['obj']) is None: return []
+
+            # Проход по всем потомкам корневого элемента
+            for child in root:
+                # Тег который содержит имя класса
+                if child.tag == self.__tags_in_xml['obj']:
+                    # Тег не найден
+                    if child.find(self.__tags_in_xml['name']) is None: return []
+
+                    # Проход по всем детям 'object'
+                    for ch in child.iter():
+                        # Имя класса
+                        if ch.tag == self.__tags_in_xml['name']: classes.append(ch.text)  # Добавление класса в массив
+
+            return classes
 
     # График подсчета количества экземпляров в каждом классе
     def _countplot(self, cols: int = 1, rows: int = 1, show_legend: bool = True, out: bool = True,
@@ -435,7 +523,8 @@ class Statistics(Messages):
         self._clear_notebook_history_output()  # Очистка истории вывода сообщений в ячейке Jupyter
 
         # Сброс
-        self._df_files = pd.DataFrame()  # Пустой DataFrame
+        self._df_files = pd.DataFrame()  # Пустой DataFrame с данными
+        self._df_files_without_annotated = pd.DataFrame()  # Пустой DataFrame с данными без аннотации
 
         try:
             # Проверка аргументов
@@ -456,13 +545,17 @@ class Statistics(Messages):
 
                 if type(self.keys_dataset) is not list: raise TypeError
 
-                # Словарь для DataFrame набора данных
+                # Словарь для DataFrame набора данных с данными
                 self._dict_of_files = dict(zip(self.keys_dataset, [[] for _ in range(0, len(self.keys_dataset))]))
+                # Словарь для DataFrame набора данных с данными без аннотации
+                self._dict_of_files_without_annotated = dict(zip([self.keys_dataset[0]], [[]]))
             except (TypeError, FileNotFoundError):
                 self._other_error(self._folder_not_found.format(self._info_wrapper(self.path_to_dataset)), out = out)
             except Exception: self._other_error(self._unknown_err, out = out); return None
             else:
                 all_empty = True  # По умолчанию все каталоги пустые
+                # Распознавание объектов
+                if self.__obj_det is True: with_annotated = False  # По умолчанию все файлы с аннотацией
 
                 # Установка списка с директориями входящими в выборку
                 self.filter_dirs = [v.lower().replace(' ', '_').capitalize().strip() for v in
@@ -484,28 +577,60 @@ class Statistics(Messages):
                         except TypeError: self._other_error(self._som_ww, out = out); return None
                         except Exception: self._other_error(self._unknown_err, out = out); return None
                         else:
+                            # Расширение файла соответствует расширению искомых файлов
                             if p.suffix.lower() in self.ext:
+                                valid_annotated = True  # По умолчанию разметка валидная
+
+                                # Распознавание объектов
+                                if self.__obj_det is True:
+                                    file_xml = os.path.join(p.parent, p.stem + self._ext_annotated)  # Файла с разметкой
+
+                                    # Получение аннотаций для распознавания объектов
+                                    classes = self.__get_annotated_classes(file_xml)
+
+                                    if len(classes) == 0:
+                                        if self.__append_to_list_of_files_without_annotated(p.resolve(), out) is False:
+                                            return None
+
+                                        # Минимум 1 файл без аннотации
+                                        if with_annotated is False: with_annotated = True
+                                        valid_annotated = False  # Разметка не валидная
+
                                 if empty is True: empty = False  # Каталог не пустой
                                 if all_empty is True: all_empty = False  # Все каталоги не пустые
 
-                                # Добавление значений в словарь для DataFrame
-                                if self.__append_to_list_of_files(
-                                    p.resolve(), func_for_class_name(curr_path)) is False: return None
+                                # Разметка валидная
+                                if valid_annotated is True:
+                                    # Добавление значений в словарь для DataFrame
+                                    if self.__append_to_list_of_files(
+                                            p.resolve(),
+                                            classes if self.__obj_det else [func_for_class_name(curr_path)],
+                                            out
+                                    ) is False: return None
 
                     # В каталоге нет файлов
                     if empty is True:
                         # Добавление значений в словарь для DataFrame
-                        if self.__append_to_list_of_files(np.nan, func_for_class_name(curr_path)) is False: return None
+                        if self.__append_to_list_of_files(np.nan, [func_for_class_name(curr_path)], out) is False:
+                            return None
                 # Во всех каталогах нет файлов
                 try:
                     if all_empty is True: raise TypeError
                 except TypeError: self._other_error(self._files_not_found, out = out); return None
                 except Exception: self._other_error(self._unknown_err, out = out)
                 else:
-                    # Отображение в DataFrame
+                    # Отображение в DataFrame с данными
                     self._df_files = pd.DataFrame.from_dict(data = self._dict_of_files, orient = 'index').transpose()
                     self._df_files.index.name = self._keys_id
                     self._df_files.index += 1
+
+                    # Минимум 1 файл без аннотации
+                    if self.__obj_det is True and with_annotated is True:
+                        # Отображение в DataFrame с данными без аннотации
+                        self._df_files_without_annotated = pd.DataFrame.from_dict(
+                            data = self._dict_of_files_without_annotated, orient = 'index').transpose()
+                        self._df_files_without_annotated.index.name = self._keys_id
+                        self._df_files_without_annotated.index += 1
 
                     # Добавление ID каждому классу
                     try:
@@ -516,28 +641,101 @@ class Statistics(Messages):
                     else:
                         self._df_files.index = self._df_files.index.map(str)
 
-                        # Информационное сообщение
-                        self._info(self._all_find_files.format(self._info_wrapper(len(self._df_files)),
-                            self._info_wrapper(', '.join(x.lower().replace('.', '') for x in self.ext))
-                        ), last = False, out = False)
-                        # Отображение истории вывода сообщений в ячейке Jupyter
-                        if out: self.show_notebook_history_output()
+                        # Распознавание объектов
+                        if self.__obj_det is True:
+                            # Информационное сообщение
+                            self._info(self._all_find_files_with_annotated.format(
+                                self._info_wrapper(self._ext_annotated.replace('.', '')),
+                                self._info_wrapper(', '.join(x.lower().replace('.', '') for x in self.ext)),
+                                self._info_wrapper(len(self._df_files)),
+                                self._info_wrapper(len(self._df_files) + len(self._df_files_without_annotated))
+                            ), last = False, out = False)
+                        else:
+                            # Информационное сообщение
+                            self._info(self._all_find_files.format(self._info_wrapper(len(self._df_files)),
+                                self._info_wrapper(', '.join(x.lower().replace('.', '') for x in self.ext))
+                            ), last = False, out = False)
 
                         # Отображение
                         if out is True:
-                            display(self._df_files.iloc[0:self.num_to_df_display, :])  # Отображение первых N строк
+                            self._add_notebook_history_output(self._df_files.iloc[0:self.num_to_df_display, :])
+
+                        # Распознавание объектов
+                        if self.__obj_det is True:
+                            # Минимум 1 файл без аннотации
+                            if with_annotated is True:
+                                # Информационное сообщение
+                                self._error(self._all_find_files_without_annotated.format(
+                                    self._info_wrapper(len(self._df_files_without_annotated))
+                                ), last = False, out = False)
+
+                                # Отображение
+                                if out is True:
+                                    self._add_notebook_history_output(
+                                        self._df_files_without_annotated.iloc[0:self.num_to_df_display, :])
+                            else:
+                                # Информационное сообщение
+                                self._info_true(self._all_find_files_is_annotated.format(
+                                    self._info_wrapper(', '.join(x.lower().replace('.', '') for x in self.ext))
+                                ), last = False, out = False)
+
+                        # Отображение истории вывода сообщений в ячейке Jupyter
+                        if out is True: self.show_notebook_history_output()
 
                         if logs is True:
                             # Текущее время для лог файла
                             # см. datetime.fromtimestamp()
                             curr_ts = str(datetime.now().timestamp()).replace('.', '_')
 
-                            # Сохранение LOG
-                            res_save_logs = self._save_logs(self._df_files, self.generate_df.__name__ + '_' + curr_ts)
+                            # Распознавание объектов
+                            if self.__obj_det is True: name_logs_file = self.generate_df_obj_det.__name__
+                            else: name_logs_file = self.generate_df.__name__
 
-                            if res_save_logs is True: self._info_true(self._logs_save_true, out = out)
+                            # Сохранение LOG
+                            res_save_logs = self._save_logs(
+                                self._df_files, name_logs_file + ('_with_annotated_' if self.__obj_det else '')
+                                + curr_ts)
+
+                            # Сохранение LOG с не аннотированными файлами
+                            if self.__obj_det is True and with_annotated is True:
+                                res_saved_logs = self._save_logs(
+                                    self._df_files_without_annotated, name_logs_file
+                                    + ('_without_annotated_' if self.__obj_det else '') + curr_ts)
+
+                            if res_save_logs is True:
+                                # Сохранение LOG файла/файлов
+                                if self.__obj_det is True and with_annotated is True:
+                                    if res_saved_logs is False: return None
+
+                                    logs_s = self._logs_saves_true
+                                else: logs_s = self._logs_save_true
+
+                                self._info_true(logs_s, out = out)
             finally:
                 if runtime: self._r_end(out = out)
+
+    # Формирование DataFrame для статистики (распознавание объектов)
+    def generate_df_obj_det(self, depth: int = 1,
+                            func_for_class_name: FunctionType = lambda class_name: Path(class_name).name,
+                            runtime: bool = True, logs: bool = True, out: bool = True, run: bool = True):
+        """
+        Формирование DataFrame для статистики (распознавание объектов)
+
+        Аргументы:
+            depth - Глубина иерархии для извлечения классов
+            func_for_class_name - Функция для приведения названий классов в необходимый вид
+            runtime - Подсчет времени выполнения
+            logs - При необходимости формировать LOG файл
+            out - Отображение
+            run - Блокировка выполнения
+        """
+
+        self.__obj_det = True
+
+        self.generate_df(depth = depth, func_for_class_name = func_for_class_name, runtime = runtime, logs = logs,
+                         out = out, run = run)
+
+        self.__obj_det = False
 
     # Получение пустых классов
     def get_empty_classes(self, runtime: bool = True, logs: bool = True, out: bool = True, run: bool = True):

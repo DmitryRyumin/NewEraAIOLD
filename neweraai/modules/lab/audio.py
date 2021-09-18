@@ -23,8 +23,8 @@ import pandas as pd  # Обработка и анализ данных
 
 from pathlib import Path  # Работа с путями в файловой системе
 
-from pymediainfo import MediaInfo         # Получение meta данных из медиафайлов
-from datetime import datetime, timedelta  # Работа со временем
+from pymediainfo import MediaInfo                   # Получение meta данных из медиафайлов
+from datetime import datetime, timedelta, timezone  # Работа со временем
 
 from typing import List, Callable  # Типы данных
 
@@ -355,7 +355,7 @@ class Audio(Messages):
         return False, None
 
     # Сортировка файла в зависимости от распознанной речи
-    def __sort_file_vad(self, results_recognized):
+    def __sort_file_vad(self, results_recognized: str):
         """
         Сортировка файла в зависимости от распознанной речи
 
@@ -456,6 +456,12 @@ class Audio(Messages):
 
                 diff_time = end_time - start_time  # Разница между начальным и конечным временем
 
+                # Приведение начального и конечного времени к нужному формату
+                start_time = datetime.fromtimestamp(
+                    start_time.total_seconds()).astimezone(timezone.utc).strftime('%H:%M:%S.%f')[:-4]
+                end_time = datetime.fromtimestamp(
+                    end_time.total_seconds()).astimezone(timezone.utc).strftime('%H:%M:%S.%f')[:-4]
+
                 self.__curr_path_parent = str(Path(self.__local_path(self.__curr_path)).parent)  # Родительский каталог
 
                 # Путь до видеофрагмента
@@ -494,7 +500,9 @@ class Audio(Messages):
                 if self.__sr is True:
                     # Распознавание речи (Vosk)
                     res_vosk_sr = self._vosk_sr(
-                        path_to_file = path_to_file_vosk_sr, ss = str(start_time), to = str(end_time), runtime = False,
+                        path_to_file = path_to_file_vosk_sr,
+                        ss = start_time, to = end_time,
+                        runtime = False,
                         last = True, out = False, logs = False, run = True)
 
                     if len(res_vosk_sr) == 0: continue  # Речь не найдена
@@ -529,7 +537,7 @@ class Audio(Messages):
                 # Речь найдена
                 if sr_curr_res_true is True:
                     not_saved_files = lambda: self.__not_saved_files.append(
-                        [self.__curr_path, str(start_time), str(end_time)])
+                        [self.__curr_path, start_time, end_time])
                     try:
                         # Работает с пустыми кадрами в конце видео
                         # ff_video = 'ffmpeg -ss {} -i "{}" -to {} -c copy "{}"'.format(

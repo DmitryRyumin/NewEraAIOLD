@@ -52,6 +52,7 @@ class Messages(Language):
                                                         'причину ...')
 
         self._logs_save_true: str = self._('Лог файл успешно сохранен ...')
+        self._logs_saves_true: str = self._('Лог файлы успешно сохранены ...')
 
         self._from_precent: str = self._('из')
 

@@ -1,5 +1,19 @@
 # NewEraAI - New Era Artificial Intelligence
 
+## September 18, 2021
+
+> `1.0.4`
+
+<h4><span style="color:#247CB4;">Changes</span></h4>
+
+- Updated `small` model for Russian language recognition (version: `0.15`)
+- Updated require packages
+
+<h4><span style="color:#DB534F;">Fixed bugs</span></h4>
+
+- Fixed a bug in the `vosk_sr` method of the [Speech](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/speech.py) class and the` vad` method of the [Audio](https://github.com/DmitryRyumin/NewEraAI/blob/main/neweraai/modules/lab/audio.py) class, which did not allow speech recognition in cases where the audio or video file lacked information distinguishable from speech (silence, noise, knocking, etc.)
+- Fixed typos
+
 ## April 17, 2021
 
 > `1.0.3`

@@ -641,7 +641,8 @@ class Core(Messages):
         """
 
         if self.is_notebook is True and len(self._notebook_history_output) > 0:
-            for e in self._notebook_history_output: display(Markdown(e))  # Отображение
+            # Отображение
+            for e in self._notebook_history_output: display(e if isinstance(e, pd.DataFrame) else Markdown(e))
 
     # Получение meta данных из медиафайла
     def media_info(self, path_to_file: str, runtime: bool = True, run: bool = True):

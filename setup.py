@@ -10,17 +10,17 @@ if sys.version_info[:2] < MIN_PYTHON_VERSION:
 import neweraai
 
 REQUIRED_PACKAGES = [
-    'torch >= 1.8.1',
-    'torchaudio >= 0.8.1',
+    'torch >= 1.9.0',
+    'torchaudio >= 0.9.0',
     'SoundFile >= 0.10.3.post1',
-    'numpy >= 1.20.2',
-    'pandas >= 1.2.4',
-    'matplotlib >= 3.4.1',
-    'jupyterlab >= 3.0.14',
-    'pymediainfo >= 5.0.4',
-    'requests >= 2.25.1',
-    'vosk >= 0.3.21',
-    'seaborn >= 0.11.1'
+    'numpy >= 1.21.2',
+    'pandas >= 1.3.3',
+    'matplotlib >= 3.4.3',
+    'jupyterlab >= 3.1.12',
+    'pymediainfo >= 5.1.0',
+    'requests >= 2.26.0',
+    'vosk >= 0.3.31',
+    'seaborn >= 0.11.2'
 ]
 
 CLASSIFIERS = """\
@@ -34,6 +34,7 @@ License :: OSI Approved :: MIT License
 Programming Language :: Python
 Programming Language :: Python :: 3
 Programming Language :: Python :: 3.8
+Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3 :: Only
 Programming Language :: Python :: Implementation :: CPython
 Topic :: Scientific/Engineering
